@@ -1,0 +1,2 @@
+MOCK_CONFIG ?=	epel-6-x86_64
+MOCK_RESULT =	mock-result-$(MOCK_CONFIG)
