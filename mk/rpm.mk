@@ -154,15 +154,17 @@ endif
 		exit 1; \
 	fi
 
-ifdef GPG_NAME
-	rpmsign --addsign \
-		-D '_signature gpg' \
-		-D '_gpg_name $(GPG_NAME)' \
-		$(wildcard $(MOCK_RESULT)/*.rpm)
-endif
+	$(MAKE) sign
 
 	python ../util/deploy.py --repo-root $(REPO_DIR) \
 	 	--dist $(MOCK_DIST) --arch $(MOCK_ARCH) \
 		$(wildcard $(MOCK_RESULT)/*.rpm)
 
 endif	# SKIP
+
+# Like deploy, but deploys into the local directory.
+deploy-local:
+	$(MAKE) sign
+	python ../util/deploy.py --repo-root ./deploy \
+		--dist $(MOCK_DIST) --arch $(MOCK_ARCH) \
+		$(wildcard $(MOCK_RESULT)/*.rpm)
