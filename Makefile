@@ -15,10 +15,10 @@ SUBDIRS +=	nsm-snort-select
 SUBDIRS +=	nsm-barnyard2
 SUBDIRS +=	nsm-daemonlogger
 
-include mk/defaults.mk
--include config.mk
-
 all:
+
+include mk/defaults.mk
+-include local.mk
 
 mock clean:
 	@for dir in $(SUBDIRS); do \

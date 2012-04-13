@@ -47,6 +47,7 @@ def main():
 
     if not os.path.exists(repo_root):
         print >>sys.stderr, "ERROR: %s does not exist." % (repo_root)
+        return 1
 
     for filename in args:
         m = re.search(".*\.(.*)\.(.*)\.rpm", filename)

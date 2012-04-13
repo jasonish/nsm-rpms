@@ -1,5 +1,8 @@
 include ../mk/defaults.mk
--include ../config.mk
+
+all:
+
+-include ../local.mk
 
 NAME =		$(shell awk '/^Name:/ { print $$2 }' $(SPEC))
 VERSION =	$(shell awk '/^Version:/ { print $$2 }' $(SPEC))
@@ -36,7 +39,7 @@ endif
 
 ifdef SKIP
 
-all mock local deploy:
+mock local deploy:
 	@echo "***> Package not supported for distribution $(MOCK_CONFIG)"
 
 else	# SKIP
@@ -63,7 +66,7 @@ fetch: $(REMOTE_FILES)
 mock: MOCK_INSTALL := $(addsuffix .$(MOCK_DIST).$(MOCK_ARCH).rpm,\
 			$(MOCK_INSTALL))
 mock: MOCK_INSTALL := $(addprefix $(RPM_CACHE)/,$(MOCK_INSTALL))
-mock: $(SRPM)
+mock: work/$(SRPM)
 
 	rm -rf $(MOCK_RESULT)
 
@@ -79,7 +82,7 @@ ifdef MOCK_INSTALL
 	$(MOCK) --install $(foreach path, $(MOCK_INSTALL), --install $(path))
 endif
 	$(MOCK) -v --no-cleanup-after --no-clean \
-		--resultdir=$(MOCK_RESULT) $(SRPM)
+		--resultdir=$(MOCK_RESULT) work/$(SRPM)
 	$(MOCK) clean
 	mkdir -p $(RPM_CACHE)
 	cp $(MOCK_RESULT)/*.rpm $(RPM_CACHE)
@@ -93,17 +96,17 @@ local: $(FILES) checksum
 		--define '_rpmdir $(CURDIR)/RPMS' \
 		--nodeps -ba $(SPEC)
 
-$(SRPM): $(SPEC) $(FILES)
+work/$(SRPM): $(SPEC) $(FILES)
 	rpmbuild \
 		--define '_sourcedir .' \
 		--define '_specdir .' \
 		--define '_builddir .' \
-		--define '_srcrpmdir .' \
+		--define '_srcrpmdir work' \
 		--define '_rpmdir .' \
 		--define 'dist .nsm' \
 		--nodeps -bs $(SPEC)
 
-srpm: $(SRPM)
+srpm: work/$(SRPM)
 
 makesum:
 ifdef FILES
@@ -123,9 +126,8 @@ endif
 
 clean::
 	rm -rf BUILD RPMS SRPMS
-	rm -f *.src.rpm
+	rm -rf work
 	rm -f $(notdir $(REMOTE_SRCS))
-	rm -rf $(MOCK_RESULT)
 
 sign:
 ifndef GPG_NAME
@@ -164,7 +166,10 @@ endif	# SKIP
 
 # Like deploy, but deploys into the local directory.
 deploy-local:
-	$(MAKE) sign
-	python ../util/deploy.py --repo-root ./deploy \
+ifdef GPG_NAME
+	@$(MAKE) sign
+endif
+	@mkdir -p $(LOCAL_DEPLOY_DIR)
+	python ../util/deploy.py --repo-root $(LOCAL_DEPLOY_DIR) \
 		--dist $(MOCK_DIST) --arch $(MOCK_ARCH) \
 		$(wildcard $(MOCK_RESULT)/*.rpm)

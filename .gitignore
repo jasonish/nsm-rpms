@@ -1,3 +1,2 @@
 .cache
-config.mk
-mock-result-*
+local.mk
