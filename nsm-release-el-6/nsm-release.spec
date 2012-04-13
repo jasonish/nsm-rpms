@@ -1,6 +1,6 @@
 Name: nsm-release-el
 Version: 6
-Release: 1%{?dist}
+Release: 2%{?dist}
 Summary: NSM Packages for Enterprise Linux and EL Like Systems
 Group: System Environment/Base 
 License: Freeware
@@ -13,6 +13,7 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 # Should limit us to only being installed on EL6.
 BuildArch: noarch
 Requires: redhat-release >= %{version} 
+Requires: epel-release >= %{version}
 Conflicts: fedora-release
 
 %description
@@ -58,6 +59,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Apr 13 2012 Jason Ish <ish@unx.ca> - 6-2
+- Depend on epel-release
+
 * Wed Apr 11 2012 Jason Ish <ish@unx.ca> - 6-1
 - Make public
 
