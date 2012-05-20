@@ -1,5 +1,5 @@
 Name:           nsm-snort-latest
-Version:        2.9.2.2
+Version:        2.9.2.3
 Release:        1%{?dist}
 Summary:        A pseudo package that always depends on the latest SNORT(R).
 Group:          NSM
@@ -34,6 +34,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri May 18 2012 Jason Ish <ish@unx.ca> - 2.9.2.3-1
+- Update to Snort 2.9.2.3
+
 * Wed Apr 11 2012 Jason Ish <ish@unx.ca> - 2.9.2.2-1
 - Make public
 
