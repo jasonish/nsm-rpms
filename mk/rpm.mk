@@ -21,11 +21,14 @@ REMOTE_FILES =	$(notdir $(REMOTE_SRCS))
 SRC_CACHE :=	../.cache/distfiles
 RPM_CACHE :=	../.cache/rpms
 
-# Right now our default target is el6-x86_64.
-MOCK_DIST :=	$(shell python ../util/mock-get-info.py \
-			--config $(MOCK_CONFIG) --dist)
-MOCK_ARCH :=	$(shell python ../util/mock-get-info.py \
-			--config $(MOCK_CONFIG) --arch)
+MOCK_DIST :=	$(shell python -c 'config_opts = {}; \
+			exec(open("/etc/mock/$(MOCK_CONFIG).cfg").read()); \
+			print config_opts["dist"]')
+MOCK_ARCH :=	$(shell python -c 'config_opts = {}; \
+			exec(open("/etc/mock/$(MOCK_CONFIG).cfg").read()); \
+			print config_opts["target_arch"]')
+
+MOCK_RESULT =	work/mock/$(MOCK_CONFIG)
 
 MOCK :=		mock -r $(MOCK_CONFIG)
 
@@ -45,6 +48,11 @@ mock local deploy:
 else	# SKIP
 
 all:
+
+info:
+	@echo "MOCK_DIST: $(MOCK_DIST)"
+	@echo "MOCK_ARCH: $(MOCK_ARCH)"
+	@echo "MOCK_RESULT: $(MOCK_RESULT)"
 
 # Use spectool to download all sources/patches with a URL.  But before
 # downloading first check our local cache.
