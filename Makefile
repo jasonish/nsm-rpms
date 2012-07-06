@@ -3,6 +3,7 @@ SUBDIRS +=	nsm-release-el-6
 SUBDIRS +=	libnetfilter_queue
 
 SUBDIRS +=	nsm-suricata1.2
+SUBDIRS +=	nsm-suricata1.3
 SUBDIRS +=	nsm-suricata-latest
 SUBDIRS +=	nsm-suricata-select
 

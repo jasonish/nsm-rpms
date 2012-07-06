@@ -1,16 +1,15 @@
 %define _prefix /opt/nsm
 %define realname suricata
 %define major_version 1.3
-%define version_suffix rc1
 
 Summary: The Suricata Open Source Intrusion Detection and Prevention Engine
 Name: nsm-suricata1.3
 Version: 1.3
-Release: 0.1.rc1%{?dist}
+Release: 1%{?dist}
 License: GPL
 Group: NSM
 URL: http://www.openinfosecfoundation.org/
-Source0: http://www.openinfosecfoundation.org/download/%{realname}-%{version}%{version_suffix}.tar.gz
+Source0: http://www.openinfosecfoundation.org/download/%{realname}-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{realname}-%{version}-%{release}-root
 
 BuildRequires: pcre-devel, libyaml-devel, libpcap-devel, file-devel, zlib-devel
@@ -26,7 +25,7 @@ Detection and Prevention Engine
 %define configure_args --enable-af-packet --enable-nfqueue
 
 %prep
-%setup -q -n %{realname}-%{version}%{version_suffix}
+%setup -q -n %{realname}-%{version}
 
 
 %build

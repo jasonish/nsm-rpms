@@ -1,5 +1,5 @@
 Name:           nsm-suricata-latest
-Version:        1.2
+Version:        1.3
 Release:        1%{?dist}
 Summary:        A pseudo package that always depends on the latest Suricata
 Group:          NSM
