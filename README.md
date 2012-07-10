@@ -1,7 +1,7 @@
 NSM RPMs
 ========
 
-The NSM RPMs is a collection packages related to Network Security
+The NSM RPMs is a collection RPM packages related to Network Security
 Monitoring.
 
 Refer to the

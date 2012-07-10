@@ -72,3 +72,8 @@ mock-dists:
 	@for dist in $(MOCK_DISTS); do \
 		$(MAKE) mock MOCK_CONFIG=$$dist; \
 	done
+
+deploy-dists:
+	@for dist in $(MOCK_DISTS); do \
+		$(MAKE) deploy MOCK_CONFIG=$$dist || exit 1; \
+	done
