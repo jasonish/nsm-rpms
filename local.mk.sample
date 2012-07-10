@@ -2,4 +2,4 @@
 #GPG_NAME = nsm-rpms@unx.ca
 
 # Path to local yum repo - full path required.
-#REPO_DIR = /home/nsm-rpms
+#REPO_ROOT = /home/nsm-rpms

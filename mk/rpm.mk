@@ -59,26 +59,28 @@ else
 endif
 
 deploy:
-ifndef REPO_DIR
-	@echo "***> ERROR: REPO_DIR not set."
+ifndef REPO_ROOT
+	@echo "***> ERROR: REPO_ROOT not set."
 	@exit 1
 endif
 
-	@if [ ! -d "${REPO_DIR}" ]; then \
-		echo "***> ERROR: ${REPO_DIR} does not exist or is not a directory."; \
-		exit 1; \
+	@if [ ! -e "${REPO_ROOT}" ]; then \
+		echo "===> Creating directory ${REPO_ROOT}"; \
+		mkdir -p ${REPO_ROOT} || exit 1; \
 	fi
 
-	@if [ ! -e "$(REPO_DIR)" ]; then \
-		echo "ERROR: $(REPO_DIR) does not exist."; \
-		exit 1; \
-	fi
+# Make sure all packages are signed.
+	@test -e reporoot && for rpm in `find reporoot -name \*.rpm`; do \
+		if ! rpm --checksig $$rpm | grep -q pgp; then \
+			echo "ERROR: $$rpm not signed"; \
+			exit 1; \
+		fi \
+	done || exit 0
 
-	$(MAKE) sign
-
-	python ../util/deploy.py --repo-root $(REPO_DIR) \
-	 	--dist $(MOCK_DIST) --arch $(MOCK_ARCH) \
-		$(wildcard $(MOCK_RESULT)/*.rpm)
+	test -e reporoot && find reporoot -name \*.rpm | \
+		xargs python ../util/deploy.py \
+		--repo-root $(REPO_ROOT) \
+	 	--dist $(MOCK_DIST) --arch $(MOCK_ARCH) || exit 0
 
 clean::
 	rm -rf work reporoot

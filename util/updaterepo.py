@@ -9,7 +9,7 @@ def main():
         rpm_count = len(filter(lambda f: f.endswith(".rpm"), files))
         if rpm_count:
             print("Updating repo %s." % (root))
-            os.system("createrepo --database --unique-md-filenames --exclude debug/*.rpm --update %s" % (root))
+            os.system("createrepo --database --exclude debug/*.rpm --update %s" % (root))
 
     return 0
 

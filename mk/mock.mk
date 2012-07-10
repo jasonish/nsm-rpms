@@ -59,9 +59,8 @@ endif
 # Caches the RPM for use by other builds inside mock.
 	cp $(MOCK_RESULT)/*.rpm $(RPM_CACHE)
 
-	@$(MAKE) mock-deploy
-
-mock-deploy:
+# Deploy locally into the projects directory in a yum repo style
+# directory tree.
 	@mkdir -p reporoot
 	@python ../util/deploy.py --repo-root reporoot \
 		--dist $(MOCK_DIST) --arch $(MOCK_ARCH) \

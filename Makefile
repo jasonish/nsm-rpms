@@ -22,7 +22,7 @@ all:
 
 -include local.mk
 
-fetch makesum mock mock-dists clean srpm:
+fetch makesum mock mock-dists clean srpm deploy:
 	@for dir in $(SUBDIRS); do \
 		echo "===> Making $@ in $$dir"; \
 		(cd $$dir && $(MAKE) -s $@) || exit 1; \

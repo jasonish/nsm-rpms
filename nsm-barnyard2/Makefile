@@ -7,5 +7,5 @@ include ../mk/rpm.mk
 
 pre-fetch::
 	@if [ ! -e $(DISTFILE_DIR)/$(SOURCE_FILE) ]; then \
-		wget -O $(DISTFILE_DIR)/$@ $(SOURCE_URL); \
+		wget -O $(DISTFILE_DIR)/$(SOURCE_FILE) $(SOURCE_URL); \
 	fi
