@@ -8,7 +8,7 @@ Release: 1%{?dist}
 License: GPLv2
 Group: NSM
 URL: http://www.snort.org
-Source0: http://ftp.freebsd.org/pub/FreeBSD/ports/distfiles/%{realname}-%{version}.tar.gz
+Source0: %{realname}-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{realname}-%{version}-%{release}-root
 
 BuildRequires: libpcap-devel, libdnet-devel

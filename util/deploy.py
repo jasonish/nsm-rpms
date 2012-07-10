@@ -9,6 +9,7 @@ import shutil
 
 dist_path_map = {"el6": "el/6",
                  "fc16": "fedora/16",
+                 "fc17": "fedora/17",
                  }
 
 basearch = {"x86_64": "x86_64",

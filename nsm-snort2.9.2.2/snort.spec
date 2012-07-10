@@ -63,7 +63,11 @@ rm -rf $RPM_BUILD_ROOT%{_includedir}
 rm -rf $RPM_BUILD_ROOT%{_prefix}/src
 rm -rf $RPM_BUILD_ROOT%{_prefix}/lib/pkgconfig
 rm -rf $RPM_BUILD_ROOT%{_prefix}/lib/snort
+rm -rf $RPM_BUILD_ROOT%{_prefix}/lib64/pkgconfig
+rm -rf $RPM_BUILD_ROOT%{_prefix}/lib64/snort
+
 find $RPM_BUILD_ROOT -name \*.la -exec rm -f {} \;
+find $RPM_BUILD_ROOT -name \*.a -exec rm -f {} \;
 
 mv $RPM_BUILD_ROOT%{_prefix}/lib/snort_dynamicengine \
 	$RPM_BUILD_ROOT%{_prefix}/lib/snort%{version}_dynamicengine

@@ -8,7 +8,11 @@ Release: 1%{?dist}
 License: GPL
 Group: NSM
 URL: http://www.snort.org/
-Source0: http://sourceforge.net/projects/snort/files/%{realname}/%{realname}-%{version}.tar.gz
+
+# No longer available.
+#Source0: http://sourceforge.net/projects/snort/files/%{realname}/%{realname}-%{version}.tar.gz
+Source0: http://ftp.freebsd.org/pub/FreeBSD/ports/distfiles/snort-2.9.2.1.tar.gz
+
 BuildRoot: %{_tmppath}/%{realname}-%{version}-%{release}-root
 
 BuildRequires: libpcap-devel, pcre-devel, libdnet-devel, zlib-devel
@@ -62,8 +66,12 @@ done
 rm -rf $RPM_BUILD_ROOT%{_includedir}
 rm -rf $RPM_BUILD_ROOT%{_prefix}/src
 rm -rf $RPM_BUILD_ROOT%{_prefix}/lib/pkgconfig
+rm -rf $RPM_BUILD_ROOT%{_prefix}/lib64/pkgconfig
 rm -rf $RPM_BUILD_ROOT%{_prefix}/lib/snort
+rm -rf $RPM_BUILD_ROOT%{_prefix}/lib64/snort
+
 find $RPM_BUILD_ROOT -name \*.la -exec rm -f {} \;
+find $RPM_BUILD_ROOT -name \*.a -exec rm -f {} \;
 
 mv $RPM_BUILD_ROOT%{_prefix}/lib/snort_dynamicengine \
 	$RPM_BUILD_ROOT%{_prefix}/lib/snort%{version}_dynamicengine

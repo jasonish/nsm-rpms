@@ -8,7 +8,7 @@ Release: 1%{?dist}
 License: GPL
 Group: NSM
 URL: http://www.snort.org/
-Source0: %{realname}-%{version}.tar.gz
+Source0: http://sourceforge.net/projects/snort/files/%{realname}-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{realname}-%{version}-%{release}-root
 
 BuildRequires: libpcap-devel, pcre-devel, libdnet-devel, zlib-devel

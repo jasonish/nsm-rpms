@@ -1,4 +1,5 @@
 SUBDIRS +=	nsm-release-el-6
+SUBDIRS +=	nsm-release-fc
 
 SUBDIRS +=	libnetfilter_queue
 
@@ -19,35 +20,18 @@ SUBDIRS +=	nsm-daemonlogger
 
 all:
 
-include mk/defaults.mk
 -include local.mk
 
-mock clean:
+fetch makesum mock mock-dists clean srpm:
 	@for dir in $(SUBDIRS); do \
 		echo "===> Making $@ in $$dir"; \
 		(cd $$dir && $(MAKE) -s $@) || exit 1; \
 	done
 
-deploy:
-ifndef REPO_DIR
-	@echo "***> ERROR: REPO_DIR not set."
-	@exit 1
-else
-
-# First try to sign all the RPMs in one one.
-ifdef GPG_NAME
-	@echo "===> Signing RPMs"
-	@find $(SUBDIRS) -path \*/$(MOCK_RESULT)/\*.rpm -print0 | \
-		xargs -0 rpmsign --resign \
+# Global sign target.  Instead of recursing into each directory, all
+# the RPMs will be signed in one go.
+sign:
+	@find $(SUBDIRS) -path \*reporoot/\*.rpm -print0 | \
+		xargs -0 rpmsign --addsign \
 		-D '_signature gpg' \
 		-D '_gpg_name $(GPG_NAME)'
-else
-	@echo "***> WARNING: GPG_NAME not set.  Packages will not be signed."
-endif
-
-	@for dir in $(SUBDIRS); do \
-		echo "===> Making $@ in $$dir"; \
-		(cd $$dir && $(MAKE) deploy GPG_NAME=) || exit 1; \
-	done
-
-endif	# SKIP
