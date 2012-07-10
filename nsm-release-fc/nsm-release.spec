@@ -12,7 +12,7 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildArch: noarch
 Requires: fedora-release >= %{version}
-Conflicts: redhat-release
+
 
 %description
 This package contains the YUM repository information for the NSM
