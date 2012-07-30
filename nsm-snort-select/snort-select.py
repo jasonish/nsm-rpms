@@ -31,7 +31,7 @@ def get_versions():
     versions = []
 
     for filename in glob.glob("%s/bin/snort*" % (NSM_PREFIX)):
-        m = re.search(".*(\d+\.\d+\.\d+\.\d+)$", filename)
+        m = re.search("snort(\d+\.\d+\.\d+[\.\d]*)$", filename)
         if m:
             versions.append(m.group(1))
 
