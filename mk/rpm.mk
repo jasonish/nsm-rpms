@@ -1,4 +1,9 @@
-MOCK_DISTS ?=		default
+MOCK_CONFIG ?=		default
+
+MOCK_DISTS ?=		epel-6-i386 \
+			epel-6-x86_64 \
+			fedora-17-i386 \
+			fedora-17-x86_64
 
 all:
 
