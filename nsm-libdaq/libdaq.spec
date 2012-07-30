@@ -3,7 +3,7 @@
 
 Summary: Sourcefire Data Acquisition Library
 Name: nsm-libdaq
-Version: 0.6.2
+Version: 1.1.1
 Release: 1%{?dist}
 License: GPL
 Group: NSM
@@ -54,6 +54,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Jul 30 2012 Jason Ish <ish@unx.ca> - 1.1.1-1
+- Update to 1.1.1
+
 * Wed Apr 11 2012 Jason Ish <ish@unx.ca> - 0.6.2-1
 - Make public
 
