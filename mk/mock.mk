@@ -23,13 +23,13 @@ endif
 
 ifeq ($(NO_BUILD),yes)
 
-mock mock-deploy:
+mock:
 	@echo This package is not supported for this mock configuration.
 
 else
 
 # Use mock to build the package.
-mock: work/$(SRPM_FILENAME)
+mock: work/SRPMS/$(SRPM_FILENAME)
 
 ifndef MOCK_CONFIG
 	@echo "No MOCK_CONFIG specified."
@@ -50,7 +50,6 @@ ifdef MOCK_INSTALL
 	$(MOCK) $(foreach path, $(MOCK_INSTALL), --install $(path))
 endif
 
-	$(MAKE) srpm
 	$(MOCK) -v --no-cleanup-after --no-clean \
 		--resultdir=$(MOCK_RESULT) work/SRPMS/$(SRPM_FILENAME)
 	$(MOCK) clean
@@ -71,9 +70,4 @@ endif # NO_BUILD
 mock-dists:
 	@for dist in $(MOCK_DISTS); do \
 		$(MAKE) mock MOCK_CONFIG=$$dist; \
-	done
-
-deploy-dists:
-	@for dist in $(MOCK_DISTS); do \
-		$(MAKE) deploy MOCK_CONFIG=$$dist || exit 1; \
 	done

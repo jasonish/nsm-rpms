@@ -11,5 +11,5 @@ fetch: pre-fetch
 		fi \
 	done
 
-$(addprefix SOURCES/,$(SOURCES)):
+$(addprefix work/SOURCES/,$(SOURCES)):
 	@$(MAKE) fetch

@@ -40,7 +40,7 @@ local:
 		--define '_rpmdir $(CURDIR)/work/RPMS' \
 		--nodeps -ba $(SPEC)
 
-work/$(SRPM_FILENAME): $(SPEC) $(addprefix SOURCES/,$(SOURCES))
+work/SRPMS/$(SRPM_FILENAME): $(SPEC) $(addprefix work/SOURCES/,$(SOURCES))
 	@$(MAKE) checksum
 	rpmbuild \
 		--define '_sourcedir $(CURDIR)/work/SOURCES' \
@@ -50,8 +50,9 @@ work/$(SRPM_FILENAME): $(SPEC) $(addprefix SOURCES/,$(SOURCES))
 		--define '_rpmdir $(CURDIR)/work/RPMS' \
 		--define 'dist .nsm' \
 		--nodeps -bs $(SPEC)
+	@echo $^
 
-srpm: work/$(SRPM_FILENAME)
+srpm: work/SRPMS/$(SRPM_FILENAME)
 
 sign:
 ifndef GPG_NAME
@@ -64,16 +65,6 @@ else
 endif
 
 deploy:
-ifndef REPO_ROOT
-	@echo "***> ERROR: REPO_ROOT not set."
-	@exit 1
-endif
-
-	@if [ ! -e "${REPO_ROOT}" ]; then \
-		echo "===> Creating directory ${REPO_ROOT}"; \
-		mkdir -p ${REPO_ROOT} || exit 1; \
-	fi
-
 # Make sure all packages are signed.
 	@test -e reporoot && for rpm in `find reporoot -name \*.rpm`; do \
 		if ! rpm --checksig $$rpm | grep -q pgp; then \
@@ -82,11 +73,11 @@ endif
 		fi \
 	done || exit 0
 
-	test -e reporoot && find reporoot -name \*.rpm | \
-		xargs python ../util/deploy.py \
-		--repo-root $(REPO_ROOT) \
-	 	--dist $(MOCK_DIST) --arch $(MOCK_ARCH) || exit 0
+ifdef DEPLOY_COMMAND
+	test -e reporoot && $(DEPLOY_COMMAND) || exit 0
+else
+	@echo "No DEPLOY_COMMAND specified.  Nothing to do."
+endif
 
 clean::
 	rm -rf work reporoot
-

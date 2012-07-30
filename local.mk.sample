@@ -1,5 +1,6 @@
 # GPG signing name.
 #GPG_NAME = nsm-rpms@unx.ca
 
-# Path to local yum repo - full path required.
-#REPO_ROOT = /home/nsm-rpms
+# Command to run to deploy RPMs.  This is run from inside each
+# packages directory.
+#DEPLOY_COMMAND = 
