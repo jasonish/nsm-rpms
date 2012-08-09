@@ -50,6 +50,9 @@ fi
 
 
 %changelog
+* Thu Aug  9 2012 Jason Ish <ish@unx.ca> - 0.2-1
+- Make additonal links link to the active link.
+
 * Mon Jul 30 2012 Jason Ish <ish@unx.ca> - 0.1-1
 - Handle Snort versions with only 3 components
 

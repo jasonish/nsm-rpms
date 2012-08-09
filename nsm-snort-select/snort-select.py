@@ -1,5 +1,30 @@
 #! /usr/bin/env python
 
+# Copyright (c) 2012 Jason Ish <ish@unx.ca>
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions
+# are met:
+#
+# 1. Redistributions of source code must retain the above copyright
+#    notice, this list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the above copyright
+#    notice, this list of conditions and the following disclaimer in the
+#    documentation and/or other materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESS OR IMPLIED
+# WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+# INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+# HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+# STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+# IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+
 import sys
 import os.path
 import os
@@ -16,7 +41,7 @@ USAGE: %s [options] [version]
 
 Options:
 
-    --list          List available versions
+    -l,--list       List available versions
     --if-not-set    Only set if not already set
     --usrlocal      Also setup links in /usr/local
 
@@ -62,26 +87,23 @@ def set_link(version, if_not_set=False, additional_prefixes=[]):
         if os.path.exists(p):
             os.unlink(p)
 
-    src = "%s/bin/snort%s" % (NSM_PREFIX, version)
-    for prefix in [NSM_PREFIX] + additional_prefixes:
-        dst = "%s/bin/snort" % (prefix)
-        if os.path.islink(dst) or os.path.exists(dst):
+    for dst in paths:
+        src = dst.replace("snort", "snort%s" % (version))
+        if os.path.exists(dst):
             os.unlink(dst)
         os.symlink(src, dst)
 
-    src = "%s/lib/snort%s_dynamicengine" % (NSM_PREFIX, version)
-    for prefix in [NSM_PREFIX] + additional_prefixes:
-        dst = "%s/lib/snort_dynamicengine" % (prefix)
-        if os.path.islink(dst) or os.path.exists(dst):
-            os.unlink(dst)
-        os.symlink(src, dst)
-    
-    src = "%s/lib/snort%s_dynamicpreprocessor" % (NSM_PREFIX, version)
-    for prefix in [NSM_PREFIX] + additional_prefixes:
-        dst = "%s/lib/snort_dynamicpreprocessor" % (prefix)
-        if os.path.islink(dst) or os.path.exists(dst):
-            os.unlink(dst)
-        os.symlink(src, dst)
+    for prefix in additional_prefixes:
+        for src in paths:
+            dst = src.replace(NSM_PREFIX, prefix)
+            if os.path.exists(dst):
+                if os.path.islink(dst):
+                    os.unlink(dst)
+                else:
+                    print >>sys.stderr, \
+                        "ERROR: %s exists and is not a symlink. " \
+                        "It will not be replaced." % (dst)
+            os.symlink(src, dst)
 
 def main():
 
@@ -91,7 +113,7 @@ def main():
 
     try:
         opts, args = getopt.getopt(
-            sys.argv[1:], "", ["list", "if-not-set", "usrlocal"])
+            sys.argv[1:], "l", ["list", "if-not-set", "usrlocal"])
     except getopt.GetoptError, e:
         usage(sys.stderr)
         return 1
@@ -103,9 +125,7 @@ def main():
         elif o == "--usrlocal":
             additional_prefixes.append("/usr/local")
 
-    if not action and not args:
-        err(1, "nothing to do")
-    elif action == "list":
+    if not args or action == "list":
         return list_versions()
     else:
         set_link(args[0],
