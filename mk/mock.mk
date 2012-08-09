@@ -69,5 +69,5 @@ endif # NO_BUILD
 
 mock-dists:
 	@for dist in $(MOCK_DISTS); do \
-		$(MAKE) mock MOCK_CONFIG=$$dist; \
+		$(MAKE) mock MOCK_CONFIG=$$dist || exit 1; \
 	done
