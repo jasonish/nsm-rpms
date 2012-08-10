@@ -5,7 +5,7 @@
 Summary: The Suricata Open Source Intrusion Detection and Prevention Engine
 Name: nsm-suricata1.3
 Version: 1.3
-Release: 1%{?dist}
+Release: 2.nsm%{?dist}
 License: GPL
 Group: NSM
 URL: http://www.openinfosecfoundation.org/
@@ -18,34 +18,37 @@ BuildRequires: libnetfilter_queue-devel
 Requires: pcre, libyaml, libpcap, file, zlib, libnetfilter_queue
 Requires: nsm-suricata-select >= 0.01
 
+%define appdatadir %{_datadir}/suricata%{version}
+
+%define configure_args --enable-af-packet --enable-nfqueue
+
+
 %description 
 The Suricata Engine is an Open Source Next Generation Intrusion
 Detection and Prevention Engine
 
-%define configure_args --enable-af-packet --enable-nfqueue
 
 %prep
 %setup -q -n %{realname}-%{version}
 
-
 %build
 
-# Build libhtp and cache.  I should probably have a libhtp package!
-pushd libhtp
-%configure --enable-shared=no --enable-static=yes
-make
-popd
-cp -a libhtp libhtp.cached
+build_libhtp() {
+    pushd libhtp
+    %configure --enable-shared=no --enable-static=yes
+    make
+    popd
+}
 
 # Build Suricata with debug and profiling.
+build_libhtp
 %configure %{configure_args} --enable-profiling --enable-debug
 make
 cp src/suricata src/suricata-debug
 
 make distclean
-mv libhtp libhtp.orig
-mv libhtp.cached libhtp
 
+build_libhtp
 %configure %{configure_args}
 make
 
@@ -58,6 +61,16 @@ mv $RPM_BUILD_ROOT%{_bindir}/suricata \
 	$RPM_BUILD_ROOT%{_bindir}/suricata%{major_version}
 install -m 0755 src/suricata-debug \
 	$RPM_BUILD_ROOT%{_bindir}/suricata-debug%{major_version}
+
+install -d -m 0755 $RPM_BUILD_ROOT%{appdatadir}
+install -m 0644 suricata.yaml.in $RPM_BUILD_ROOT%{appdatadir}/suricata.yaml
+install -m 0644 classification.config $RPM_BUILD_ROOT%{appdatadir}/
+install -m 0644 reference.config $RPM_BUILD_ROOT%{appdatadir}/
+
+install -d -m 0755 $RPM_BUILD_ROOT%{appdatadir}/rules
+for file in rules/*.rules; do
+  install -m 0644 $file $RPM_BUILD_ROOT%{appdatadir}/rules
+done
 
 # Cleanup.
 rm -rf $RPM_BUILD_ROOT%{_includedir}
@@ -76,11 +89,12 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/suricata%{major_version}
 %{_bindir}/suricata-debug%{major_version}
 %doc COPYING LICENSE ChangeLog doc/*
-
-# Not really doc, should probably go in a better place.
-%doc suricata.yaml classification.config reference.config
+%{appdatadir}/*
 
 %changelog
+* Fri Jul 6 2012 Jason Ish <ish@unx.ca> 1.3-1
+- Update to Suricata 1.3
+
 * Wed Apr 11 2012 Jason Ish <ish@unx.ca> - 1.2.1-1
 - Make public
 
