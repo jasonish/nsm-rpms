@@ -4,7 +4,7 @@
 Summary: The Suricata Open Source Intrusion Detection and Prevention Engine
 Name: nsm-suricata1.3.1
 Version: 1.3.1
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: GPL
 Group: NSM
 URL: http://www.openinfosecfoundation.org/
@@ -63,7 +63,7 @@ install -m 0755 src/suricata-debug \
 	$RPM_BUILD_ROOT%{_bindir}/suricata-debug%{version}
 
 install -d -m 0755 $RPM_BUILD_ROOT%{appdatadir}
-install -m 0644 suricata.yaml.in $RPM_BUILD_ROOT%{appdatadir}/suricata.yaml
+install -m 0644 suricata.yaml $RPM_BUILD_ROOT%{appdatadir}/suricata.yaml
 install -m 0644 classification.config $RPM_BUILD_ROOT%{appdatadir}/
 install -m 0644 reference.config $RPM_BUILD_ROOT%{appdatadir}/
 
@@ -95,6 +95,9 @@ rm -rf $RPM_BUILD_ROOT
 %doc suricata.yaml classification.config reference.config
 
 %changelog
+* Thu Sep  6 2012 Jason Ish <ish@unx.ca> - 1.3.1-2
+- Use the generated suricata.yaml
+
 * Wed Apr 11 2012 Jason Ish <ish@unx.ca> - 1.2.1-1
 - Make public
 
