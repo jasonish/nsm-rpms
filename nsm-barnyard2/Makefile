@@ -1,7 +1,7 @@
 SPEC =		nsm-barnyard2.spec
 
 SOURCE_FILE =	barnyard2-1.10.tar.gz
-SOURCE_URL =	https://github.com/firnsy/barnyard2/tarball/v2-1.10-beta2
+SOURCE_URL =	https://github.com/firnsy/barnyard2/tarball/v2-1.10
 
 include ../mk/rpm.mk
 
