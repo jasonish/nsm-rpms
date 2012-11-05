@@ -1,8 +1,3 @@
-MOCK_DISTS ?=		epel-6-i386 \
-			epel-6-x86_64 \
-			fedora-17-i386 \
-			fedora-17-x86_64
-
 all:
 
 -include ../local.mk
@@ -26,6 +21,14 @@ include ../mk/checksum.mk
 include ../mk/mock.mk
 
 all:
+	@echo ""
+	@echo "usage:"
+	@echo ""
+	@echo "  $(MAKE) mock     Build in mock for all distributions"
+	@echo "  $(MAKE) local    Build for local system"
+	@echo "  $(MAKE) srpms    Build SRPM"
+	@echo "  $(MAKE) sign     Sign built RPMs."
+	@echo ""
 
 local:
 	@$(MAKE) fetch

@@ -1,6 +1,25 @@
 MOCK :=		mock -r $(MOCK_CONFIG)
 
-ifdef MOCK_CONFIG
+MOCK_DISTS ?=	epel-6-i386 \
+		epel-6-x86_64 \
+		fedora-17-i386 \
+		fedora-17-x86_64
+
+ifndef MOCK_CONFIG
+
+# If the package specifies FOR_DISTS, filter MOCK_DISTS to only
+# include those specified in FOR_DISTS.
+ifdef FOR_DISTS
+MOCK_DISTS := $(filter $(FOR_DISTS),$(MOCK_DISTS))
+endif
+
+mock:
+	@for dist in $(MOCK_DISTS); do \
+		$(MAKE) mock MOCK_CONFIG=$$dist || exit 1; \
+	done
+
+else # MOCK_CONFIG
+
 MOCK_DIST :=	$(shell python -c 'config_opts = {}; \
 			exec(open("/etc/mock/$(MOCK_CONFIG).cfg").read()); \
 			print config_opts["dist"]')
@@ -11,30 +30,9 @@ MOCK_RESULT =	work/mock/$(MOCK_CONFIG)
 
 MOCK_INSTALL :=	$(addprefix $(RPM_CACHE)/,\
 	$(addsuffix .$(MOCK_DIST).$(MOCK_ARCH).rpm,$(MOCK_INSTALL)))
-endif
-
-# Some packages may only be for certain distributions.  If FOR_DISTS is defined
-# and the MOCK_CONFIG is not included in the FOR_DISTS set NO_BUILD
-ifdef FOR_DISTS
-ifneq ($(filter $(FOR_DISTS),$(MOCK_CONFIG)),$(MOCK_CONFIG))
-NO_BUILD = yes
-endif
-endif
-
-ifeq ($(NO_BUILD),yes)
-
-mock:
-	@echo This package is not supported for this mock configuration.
-
-else
 
 # Use mock to build the package.
 mock: work/SRPMS/$(SRPM_FILENAME)
-
-ifndef MOCK_CONFIG
-	@echo "No MOCK_CONFIG specified."
-	@exit 1
-endif
 
 	rm -rf $(MOCK_RESULT)
 
@@ -65,9 +63,4 @@ endif
 		--dist $(MOCK_DIST) --arch $(MOCK_ARCH) \
 		$(MOCK_RESULT)/*.rpm
 
-endif # NO_BUILD
-
-mock-dists:
-	@for dist in $(MOCK_DISTS); do \
-		$(MAKE) mock MOCK_CONFIG=$$dist || exit 1; \
-	done
+endif # MOCK_CONFIG
