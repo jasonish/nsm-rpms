@@ -8,6 +8,7 @@ SUBDIRS +=	nsm-suricata1.3
 SUBDIRS +=	nsm-suricata1.3.1
 SUBDIRS +=	nsm-suricata1.3.2
 SUBDIRS +=	nsm-suricata1.3.3
+SUBDIRS +=	nsm-suricata1.3.4
 SUBDIRS +=	nsm-suricata-latest
 SUBDIRS +=	nsm-suricata-select
 

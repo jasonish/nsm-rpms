@@ -1,5 +1,3 @@
-MOCK_CONFIG ?=		default
-
 MOCK_DISTS ?=		epel-6-i386 \
 			epel-6-x86_64 \
 			fedora-17-i386 \
@@ -81,3 +79,4 @@ endif
 
 clean::
 	rm -rf work reporoot
+	find . -name \*~ | xargs rm -f

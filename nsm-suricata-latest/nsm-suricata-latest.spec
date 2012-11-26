@@ -1,5 +1,5 @@
 Name:           nsm-suricata-latest
-Version:        1.3.3
+Version:        1.3.4
 Release:        1%{?dist}
 Summary:        A pseudo package that always depends on the latest Suricata
 Group:          NSM
@@ -36,12 +36,6 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
-* Thu Oct  4 2012 Jason Ish <ish@unx.ca> - 1.3.2-1
-- Update to Suricata 1.3.2.
-
-* Wed Aug 22 2012 Jason Ish <ish@unx.ca> - 1.3.1-1
-- Update to 1.3.1
-
 * Wed Apr 11 2012 Jason Ish <ish@unx.ca> - 1.2-1
 - Make public
 
