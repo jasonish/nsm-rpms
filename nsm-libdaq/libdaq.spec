@@ -3,12 +3,12 @@
 
 Summary: Sourcefire Data Acquisition Library
 Name: nsm-libdaq
-Version: 1.1.1
+Version: 2.0.0
 Release: 1%{?dist}
 License: GPL
 Group: NSM
 URL: http://www.snort.org/
-Source0: http://sourceforge.net/projects/snort/files/snort/%{realname}-%{version}.tar.gz
+Source0: %{realname}-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
 BuildRequires: libpcap-devel, libdnet-devel, libnetfilter_queue-devel
@@ -54,6 +54,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Dec  4 2012 Jason Ish <ish@unx.ca> - 1.1.1-1
+- Update to 2.0.0.
+
 * Mon Jul 30 2012 Jason Ish <ish@unx.ca> - 1.1.1-1
 - Update to 1.1.1
 
