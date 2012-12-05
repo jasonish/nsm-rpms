@@ -7,7 +7,7 @@ License:        GPLv2
 URL:            http://nsm-rpms.unx.ca
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-Requires:       nsm-snort%{version}
+Requires:       nsm-snort%{version} = %{version}-%{release}
 
 %description
 This is a pseudo package that will always depend on the latest
