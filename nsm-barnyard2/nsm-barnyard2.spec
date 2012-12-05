@@ -5,12 +5,12 @@
 
 Summary: Barnyard2: A reader for SNORT(R) unified2 log files
 Name: nsm-barnyard2
-Version: 1.10
+Version: 1.11
 Release: 1%{?dist}
 License: GPL
 Group: NSM
 URL: http://www.securixlive.com/barnyard2/index.php
-Source0: barnyard2-1.10.tar.gz
+Source0: barnyard2-1.11.tar.gz
 BuildRoot: %{_tmppath}/%{realname}-%{version}-%{release}-root
 
 BuildRequires: libtool
@@ -22,30 +22,12 @@ Requires: postgresql-libs
 %define nsm_datadir %{_datadir}/%{realname}-%{version}
 
 %description
-
-Barnyard2 is a fork of the original barnyard project, designed
-specifically for Snort's new unified2 file format. Barnyard2 is under
-active development and continues to adapt based on user feedback.  
-
-The current release of 2-1.8 has the following features:
-
-- Offloads output processing of your Snort alert files to a dedicated
-  process, minimising dropped packets in Snort itself.
-
-- Parses unified2 files.
-
-- Uses similar configuration syntax to that of Snort to simplify deployment.
-
-- Supports all Snort output plugins (except alert_sf_socket) as well
-  as two additional plugins (Sguil and CEF).
-
-Barnyard2 has been written from the ground up and leveraging off of
-Snort's core routines and is continually aligned to the latest
-releases of Snort. It is released under the GPLv2 licence.
+Barnyard2 is a dedicated spooler for Snort's unified2 binary output format.
 
 
 %prep
-%setup -q -n firnsy-barnyard2-2f5d496
+#%setup -q -n firnsy-barnyard2-4dfdc80
+%setup -q -n barnyard2-ish-v2-1.11
 
 
 %build
