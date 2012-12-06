@@ -13,9 +13,9 @@ ifdef FOR_DISTS
 MOCK_DISTS := $(filter $(FOR_DISTS),$(MOCK_DISTS))
 endif
 
-mock:
+mock mock-deploy:
 	@for dist in $(MOCK_DISTS); do \
-		$(MAKE) mock MOCK_CONFIG=$$dist || exit 1; \
+		$(MAKE) $@ MOCK_CONFIG=$$dist || exit 1; \
 	done
 
 else # MOCK_CONFIG
@@ -56,11 +56,22 @@ endif
 # Caches the RPM for use by other builds inside mock.
 	cp $(MOCK_RESULT)/*.rpm $(RPM_CACHE)
 
-# Deploy locally into the projects directory in a yum repo style
-# directory tree.
-	@mkdir -p reporoot
-	@python ../util/deploy.py --repo-root reporoot \
-		--dist $(MOCK_DIST) --arch $(MOCK_ARCH) \
-		$(MOCK_RESULT)/*.rpm
+	$(MAKE) mock-deploy
+
+ifeq ($(MOCK_DIST),el6)
+REPO_PREFIX := reporoot/el/6/
+else ifeq ($(MOCK_DIST),fc17)
+REPO_PREFIX := reporoot/fedora/17
+endif
+REPO_ARCH := $(subst i686,i386,$(MOCK_ARCH))
+mock-deploy:
+	mkdir -p $(REPO_PREFIX)/SRPMS
+	mkdir -p $(REPO_PREFIX)/$(REPO_ARCH)
+	mkdir -p $(REPO_PREFIX)/$(REPO_ARCH)/debug
+	cp $(MOCK_RESULT)/*.$(MOCK_DIST).$(MOCK_ARCH).rpm \
+		$(REPO_PREFIX)/$(REPO_ARCH)
+	mv $(REPO_PREFIX)/$(REPO_ARCH)/*debuginfo*.rpm \
+		$(REPO_PREFIX)/$(REPO_ARCH)/debug
+	cp $(MOCK_RESULT)/*.$(MOCK_DIST).src.rpm $(REPO_PREFIX)/SRPMS
 
 endif # MOCK_CONFIG
