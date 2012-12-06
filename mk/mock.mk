@@ -70,7 +70,7 @@ mock-deploy:
 	mkdir -p $(REPO_PREFIX)/$(REPO_ARCH)/debug
 	cp $(MOCK_RESULT)/*.$(MOCK_DIST).$(MOCK_ARCH).rpm \
 		$(REPO_PREFIX)/$(REPO_ARCH)
-	mv $(REPO_PREFIX)/$(REPO_ARCH)/*debuginfo*.rpm \
+	-mv $(REPO_PREFIX)/$(REPO_ARCH)/*debuginfo*.rpm \
 		$(REPO_PREFIX)/$(REPO_ARCH)/debug
 	cp $(MOCK_RESULT)/*.$(MOCK_DIST).src.rpm $(REPO_PREFIX)/SRPMS
 
