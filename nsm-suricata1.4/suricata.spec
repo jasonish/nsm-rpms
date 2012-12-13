@@ -1,12 +1,12 @@
 %define _prefix /opt/nsm
 %define realname suricata
 
-%define version_suffix rc1
+%define version_suffix
 
 Summary: The Suricata Open Source Intrusion Detection and Prevention Engine
 Name: nsm-suricata1.4
 Version: 1.4
-Release: 0.1.rc1%{?dist}
+Release: 1%{?dist}
 License: GPL
 Group: NSM
 URL: http://www.openinfosecfoundation.org/
@@ -108,6 +108,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Dec 13 2012 Jason Ish <ish@unx.ca> - 1.4-1
+- Update to 1.4 release.
+
 * Thu Nov 29 2012 Jason Ish <ish@unx.ca> - 1.4-0.1.rc1
 - Update to 1.4rc1.
 

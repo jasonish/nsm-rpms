@@ -31,7 +31,7 @@ all:
 
 -include local.mk
 
-fetch makesum mock mock-dists clean srpm deploy deploy-dists:
+fetch makesum mock mock-dists clean srpm deploy deploy-dists::
 	@for dir in $(SUBDIRS); do \
 		echo "===> Making $@ in $$dir"; \
 		(cd $$dir && $(MAKE) -s $@) || exit 1; \
@@ -44,3 +44,6 @@ sign:
 		xargs -0 rpmsign --addsign \
 		-D '_signature gpg' \
 		-D '_gpg_name $(GPG_NAME)'
+
+clean::
+	find . -name \*~ -exec rm -f {} \;
