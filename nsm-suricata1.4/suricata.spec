@@ -1,12 +1,13 @@
-%define _prefix /opt/nsm
+%define nsm_prefix /opt/nsm
+%define nsm_bindir %{nsm_prefix}/bin
+%define nsm_datadir  %{nsm_prefix}/share
 %define realname suricata
-
 %define version_suffix
 
 Summary: The Suricata Open Source Intrusion Detection and Prevention Engine
 Name: nsm-suricata1.4
 Version: 1.4
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: GPL
 Group: NSM
 URL: http://www.openinfosecfoundation.org/
@@ -15,19 +16,24 @@ BuildRoot: %{_tmppath}/%{realname}-%{version}%{?version_suffix}-%{release}-root
 
 BuildRequires: pcre-devel, libyaml-devel, libpcap-devel, file-devel, zlib-devel
 BuildRequires: libnetfilter_queue-devel
+BuildRequires: nss-devel
+BuildRequires: nspr-devel
 
 Requires: pcre, libyaml, libpcap, file, zlib, libnetfilter_queue
 Requires: nsm-suricata-select >= 0.01
+Requires: nspr, nss
 
-%define appdatadir %{_datadir}/suricata%{version}
-
-%define configure_args --enable-af-packet --enable-nfqueue
-
+%define appdatadir %{nsm_datadir}/suricata%{version}
 
 %description 
 The Suricata Engine is an Open Source Next Generation Intrusion
 Detection and Prevention Engine
 
+Options:
+  - AF_PACKET
+  - NFQueue
+  - libnss
+  - libnspr
 
 %prep
 %setup -q -n %{realname}-%{version}%{?version_suffix}
@@ -41,7 +47,8 @@ build_libhtp() {
         cp -a libhtp.cache libhtp
     else
         pushd libhtp
-        %configure --enable-shared=no --enable-static=yes
+        ./configure --prefix=%{nsm_prefix} \
+		--enable-shared=no --enable-static=yes
         make
         popd
 	cp -a libhtp libhtp.cache
@@ -50,7 +57,15 @@ build_libhtp() {
 
 build_suricata() {
     build_libhtp
-    %configure %{configure_args} $@
+    ./configure \
+	--prefix=%{nsm_prefix} \
+	--enable-af-packet \
+	--enable-nfqueue \
+	--with-libnss-libraries=%{_libdir} \
+	--with-libnss-includes=%{_includedir}/nss3 \
+	--with-libnspr-libraries=%{_libdir} \
+	--with-libnspr-includes=%{_includedir}/nspr4 \
+	$@
     make
 }
 
@@ -64,12 +79,12 @@ build_suricata
 rm -rf $RPM_BUILD_ROOT
 make install DESTDIR=$RPM_BUILD_ROOT
 
-mv $RPM_BUILD_ROOT%{_bindir}/suricata \
-	$RPM_BUILD_ROOT%{_bindir}/suricata%{version}
-mv $RPM_BUILD_ROOT%{_bindir}/suricatasc \
- 	$RPM_BUILD_ROOT%{_bindir}/suricatasc%{version}
+mv $RPM_BUILD_ROOT%{nsm_bindir}/suricata \
+	$RPM_BUILD_ROOT%{nsm_bindir}/suricata%{version}
+mv $RPM_BUILD_ROOT%{nsm_bindir}/suricatasc \
+ 	$RPM_BUILD_ROOT%{nsm_bindir}/suricatasc%{version}
 install -m 0755 src/suricata-debug \
-	$RPM_BUILD_ROOT%{_bindir}/suricata-debug%{version}
+	$RPM_BUILD_ROOT%{nsm_bindir}/suricata-debug%{version}
 
 install -d -m 0755 $RPM_BUILD_ROOT%{appdatadir}
 install -m 0644 suricata.yaml $RPM_BUILD_ROOT%{appdatadir}/
@@ -86,11 +101,11 @@ done
 
 # Remove the doc directory as installed by Suricata, RPM will take
 # care of these files for us.
-rm -rf $RPM_BUILD_ROOT%{_prefix}/share/doc/suricata
+rm -rf $RPM_BUILD_ROOT%{nsm_prefix}/share/doc/suricata
 
 # Cleanup.
-rm -rf $RPM_BUILD_ROOT%{_includedir}
-rm -rf $RPM_BUILD_ROOT%{_libdir}
+rm -rf $RPM_BUILD_ROOT/%{nsm_prefix}/include
+rm -rf $RPM_BUILD_ROOT/%{nsm_prefix}/lib*
 
 
 %clean
@@ -98,16 +113,19 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %post
-%{_bindir}/suricata-select --if-not-set %{version}
+%{nsm_bindir}/suricata-select --if-not-set %{version}
 
 %files
 %defattr(-,root,root,-)
-%{_bindir}/*
+%{nsm_bindir}/*
 %doc COPYING LICENSE ChangeLog doc/*
 %{appdatadir}/*
 
 
 %changelog
+* Fri Dec 14 2012 Jason Ish <ish@unx.ca> - 1.4-2
+- Enable libnss, libnspr.
+
 * Thu Dec 13 2012 Jason Ish <ish@unx.ca> - 1.4-1
 - Update to 1.4 release.
 
