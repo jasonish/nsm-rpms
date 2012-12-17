@@ -7,7 +7,7 @@
 Summary: The Suricata Open Source Intrusion Detection and Prevention Engine
 Name: nsm-suricata1.4
 Version: 1.4
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: GPL
 Group: NSM
 URL: http://www.openinfosecfoundation.org/
@@ -65,6 +65,8 @@ build_suricata() {
 	--with-libnss-includes=%{_includedir}/nss3 \
 	--with-libnspr-libraries=%{_libdir} \
 	--with-libnspr-includes=%{_includedir}/nspr4 \
+	--with-libjansson-includes=%{nsm_prefix}/include \
+	--with-libjansson-libraries=%{nsm_prefix}/lib \
 	$@
     make
 }
@@ -123,6 +125,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Dec 17 2012 Jason Ish <ish@unx.ca> - 1.4-3
+- Add support for the JSON socket.
+
 * Fri Dec 14 2012 Jason Ish <ish@unx.ca> - 1.4-2
 - Enable libnss, libnspr.
 
