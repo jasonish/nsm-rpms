@@ -5,12 +5,6 @@ SUBDIRS +=	libnetfilter_queue
 
 SUBDIRS +=	nsm-jansson
 
-SUBDIRS +=	nsm-suricata1.2
-SUBDIRS +=	nsm-suricata1.3
-SUBDIRS +=	nsm-suricata1.3.1
-SUBDIRS +=	nsm-suricata1.3.2
-SUBDIRS +=	nsm-suricata1.3.3
-SUBDIRS +=	nsm-suricata1.3.4
 SUBDIRS +=	nsm-suricata1.3.5
 SUBDIRS +=	nsm-suricata1.4
 SUBDIRS +=	nsm-suricata-latest
