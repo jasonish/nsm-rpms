@@ -17,8 +17,6 @@ SUBDIRS +=	nsm-suricata-latest
 SUBDIRS +=	nsm-suricata-select
 
 SUBDIRS +=	nsm-libdaq
-SUBDIRS +=	nsm-snort2.9.2.1
-SUBDIRS +=	nsm-snort2.9.2.2
 SUBDIRS +=	nsm-snort2.9.2.3
 SUBDIRS +=	nsm-snort2.9.3
 SUBDIRS +=	nsm-snort2.9.3.1
