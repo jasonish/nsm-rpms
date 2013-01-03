@@ -1,13 +1,12 @@
-%define nsm_prefix /opt/nsm
-%define nsm_bindir %{nsm_prefix}/bin
-%define nsm_datadir  %{nsm_prefix}/share
+%define _defaultdocdir %{nsm_prefix}/share/doc
+
 %define realname suricata
-%define version_suffix
+%define nsm_prefix /opt/nsm
 
 Summary: The Suricata Open Source Intrusion Detection and Prevention Engine
 Name: nsm-suricata1.4
 Version: 1.4
-Release: 3%{?dist}
+Release: 4%{?dist}
 License: GPL
 Group: NSM
 URL: http://www.openinfosecfoundation.org/
@@ -20,10 +19,11 @@ BuildRequires: nss-devel
 BuildRequires: nspr-devel
 
 Requires: pcre, libyaml, libpcap, file, zlib, libnetfilter_queue
-Requires: nsm-suricata-select >= 0.01
+Requires: nsm-suricata-select >= 0.3
 Requires: nspr, nss
 
-%define appdatadir %{nsm_datadir}/suricata%{version}
+%define app_prefix  %{nsm_prefix}/packages/%{realname}/%{version}
+%define app_datadir %{app_prefix}/share
 
 %description 
 The Suricata Engine is an Open Source Next Generation Intrusion
@@ -42,23 +42,17 @@ Options:
 %build
 
 build_libhtp() {
-    if [ -e libhtp.cache ]; then
-        rm -rf libhtp
-        cp -a libhtp.cache libhtp
-    else
-        pushd libhtp
-        ./configure --prefix=%{nsm_prefix} \
-		--enable-shared=no --enable-static=yes
-        make
-        popd
-	cp -a libhtp libhtp.cache
-    fi
+    pushd libhtp
+    ./configure --prefix=%{nsm_prefix} \
+	--enable-shared=no --enable-static=yes
+    make
+    popd
 }
 
 build_suricata() {
     build_libhtp
     ./configure \
-	--prefix=%{nsm_prefix} \
+	--prefix=%{app_prefix} \
 	--enable-af-packet \
 	--enable-nfqueue \
 	--with-libnss-libraries=%{_libdir} \
@@ -80,51 +74,57 @@ build_suricata
 %install
 rm -rf $RPM_BUILD_ROOT
 make install DESTDIR=$RPM_BUILD_ROOT
-
-mv $RPM_BUILD_ROOT%{nsm_bindir}/suricata \
-	$RPM_BUILD_ROOT%{nsm_bindir}/suricata%{version}
-mv $RPM_BUILD_ROOT%{nsm_bindir}/suricatasc \
- 	$RPM_BUILD_ROOT%{nsm_bindir}/suricatasc%{version}
 install -m 0755 src/suricata-debug \
-	$RPM_BUILD_ROOT%{nsm_bindir}/suricata-debug%{version}
+	$RPM_BUILD_ROOT%{app_prefix}/bin/suricata-debug
 
-install -d -m 0755 $RPM_BUILD_ROOT%{appdatadir}
-install -m 0644 suricata.yaml $RPM_BUILD_ROOT%{appdatadir}/
-install -m 0644 classification.config $RPM_BUILD_ROOT%{appdatadir}/
-install -m 0644 reference.config $RPM_BUILD_ROOT%{appdatadir}/
-install -m 0644 threshold.config $RPM_BUILD_ROOT%{appdatadir}/
+install -d -m 0755 $RPM_BUILD_ROOT%{app_datadir}
+install -m 0644 suricata.yaml $RPM_BUILD_ROOT%{app_datadir}/
+install -m 0644 classification.config $RPM_BUILD_ROOT%{app_datadir}/
+install -m 0644 reference.config $RPM_BUILD_ROOT%{app_datadir}/
+install -m 0644 threshold.config $RPM_BUILD_ROOT%{app_datadir}/
 
 # Install the rules that are included with the distribution, even though
 # they are not needed if you get your rules from ET.
-install -d -m 0755 $RPM_BUILD_ROOT%{appdatadir}/rules
+install -d -m 0755 $RPM_BUILD_ROOT%{app_datadir}/rules
 for file in rules/*.rules; do
-  install -m 0644 $file $RPM_BUILD_ROOT%{appdatadir}/rules
+  install -m 0644 $file $RPM_BUILD_ROOT%{app_datadir}/rules
 done
 
 # Remove the doc directory as installed by Suricata, RPM will take
 # care of these files for us.
-rm -rf $RPM_BUILD_ROOT%{nsm_prefix}/share/doc/suricata
+rm -rf $RPM_BUILD_ROOT%{app_prefix}/share/doc/suricata
 
-# Cleanup.
-rm -rf $RPM_BUILD_ROOT/%{nsm_prefix}/include
-rm -rf $RPM_BUILD_ROOT/%{nsm_prefix}/lib*
+# Remove stuff we don't want to include in the RPM.
+rm -rf $RPM_BUILD_ROOT/%{app_prefix}/include
+rm -rf $RPM_BUILD_ROOT/%{app_prefix}/lib
+rm -rf $RPM_BUILD_ROOT/%{app_prefix}/share/doc
 
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
 
-%post
-%{nsm_bindir}/suricata-select --if-not-set %{version}
+%posttrans
+%{nsm_prefix}/bin/suricata-select --if-not-set %{version}
+
+
+%postun
+if [ "$1" == "0" ]; then
+   # Cleanup.
+   rm -rf %{app_prefix}
+fi
+
 
 %files
 %defattr(-,root,root,-)
-%{nsm_bindir}/*
-%doc COPYING LICENSE ChangeLog doc/*
-%{appdatadir}/*
+%{app_prefix}/*
+%doc COPYING LICENSE ChangeLog
 
 
 %changelog
+* Wed Jan  2 2013 Jason Ish <ish@unx.ca> - 1.4-4
+- Install to a version specific prefix.
+
 * Mon Dec 17 2012 Jason Ish <ish@unx.ca> - 1.4-3
 - Add support for the JSON socket.
 

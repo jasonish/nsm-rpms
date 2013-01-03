@@ -1,10 +1,12 @@
-%define _prefix /opt/nsm
+%define _defaultdocdir %{nsm_prefix}/share/doc
+
 %define realname snort
+%define nsm_prefix /opt/nsm
 
 Summary: SNORT(R): An open source Network Intrusion Detection System (NIDS)
 Name: nsm-snort2.9.4
 Version: 2.9.4
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: GPL
 Group: NSM
 URL: http://www.snort.org/
@@ -17,7 +19,9 @@ BuildRequires: libnetfilter_queue-devel
 BuildRequires: nsm-libdaq >= 2.0.0-1
 
 Requires: libpcap, pcre, libdnet, libnetfilter_queue, zlib
-Requires: nsm-snort-select >= 0.2
+Requires: nsm-snort-select >= 0.3
+
+%define app_prefix %{nsm_prefix}/packages/%{realname}/%{version}
 
 %description
 SNORT(R): An open source Network Intrusion Detection System (NIDS).
@@ -28,10 +32,12 @@ SNORT(R): An open source Network Intrusion Detection System (NIDS).
 
 
 %build
-PATH=%{_prefix}/bin:$PATH %configure \
+PATH=%{nsm_prefix}/bin:$PATH \
+	./configure \
+	--prefix=%{app_prefix} \
 	--enable-static-daq \
-	--with-daq-libraries=%{_prefix}/lib \
-	--with-daq-includes=%{_prefix}/include \
+	--with-daq-libraries=%{nsm_prefix}/lib \
+	--with-daq-includes=%{nsm_prefix}/include \
 	--enable-ipv6 --enable-gre --enable-mpls --enable-targetbased --enable-decoder-preprocessor-rules --enable-ppm --enable-perfprofiling --enable-zlib --enable-active-response --enable-normalizer --enable-reload --enable-react --enable-flexresp3
 make
 
@@ -40,65 +46,40 @@ make
 rm -rf $RPM_BUILD_ROOT
 make install DESTDIR=$RPM_BUILD_ROOT
 
-for f in snort u2boat u2spewfoo; do
-	mv $RPM_BUILD_ROOT%{_bindir}/${f} \
-		$RPM_BUILD_ROOT%{_bindir}/${f}%{version}
-done
+# Remove devel type stuff that is not required for running Snort.
+rm -rf $RPM_BUILD_ROOT/%{app_prefix}/src
+rm -rf $RPM_BUILD_ROOT/%{app_prefix}/include
 
-# Perhaps we need a -devel package, but for now just delete the devel
-# type stuff.
-rm -rf $RPM_BUILD_ROOT%{_includedir}
-rm -rf $RPM_BUILD_ROOT%{_prefix}/src
-rm -rf $RPM_BUILD_ROOT%{_prefix}/lib/pkgconfig
-rm -rf $RPM_BUILD_ROOT%{_prefix}/lib64/pkgconfig
-rm -rf $RPM_BUILD_ROOT%{_prefix}/lib/snort
-find $RPM_BUILD_ROOT -name \*.la -exec rm -f {} \;
-find $RPM_BUILD_ROOT -name \*.a -exec rm -f {} \;
-
-mv $RPM_BUILD_ROOT%{_prefix}/lib/snort_dynamicengine \
-	$RPM_BUILD_ROOT%{_prefix}/lib/snort%{version}_dynamicengine
-
-mv $RPM_BUILD_ROOT%{_prefix}/lib/snort_dynamicpreprocessor \
-	$RPM_BUILD_ROOT%{_prefix}/lib/snort%{version}_dynamicpreprocessor
-
-# Move the Snort installed docs to a more appropriate RPM location.
-mkdir -p $RPM_BUILD_ROOT/%{_docdir}
-mv $RPM_BUILD_ROOT%{_prefix}/share/doc/snort \
-	$RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}
-
-# Rename the man page.
-mv $RPM_BUILD_ROOT%{_mandir}/man8/snort.8 \
-	$RPM_BUILD_ROOT%{_mandir}/man8/snort%{version}.8
+# Remove docs installed by make install. They will be included in the
+# %files section below.
+rm -rf $RPM_BUILD_ROOT/%{app_prefix}/share/doc
 
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
 
-%post
-%{_bindir}/snort-select --if-not-set %{version}
+%posttrans
+%{nsm_prefix}/bin/snort-select --if-not-set %{version}
+
+
+%postun
+if [ "$1" == "0" ]; then
+   # Cleanup.
+   rm -rf %{app_prefix}
+fi
 
 
 %files
 %defattr(-,root,root,-)
-
-%{_bindir}/snort%{version}
-%{_bindir}/u2boat%{version}
-%{_bindir}/u2spewfoo%{version}
-
-%{_mandir}/man8/*
-
-%attr(0755,root,root) %dir %{_prefix}/lib/snort%{version}_dynamicengine
-%attr(0644,root,root) %{_prefix}/lib/snort%{version}_dynamicengine/*
-
-%attr(0755,root,root) %dir %{_prefix}/lib/snort%{version}_dynamicpreprocessor
-%attr(0644,root,root) %{_prefix}/lib/snort%{version}_dynamicpreprocessor/*
-
-%attr(0644,root,root) %{_docdir}/%{name}-%{version}
-%docdir %{_docdir}/%{name}-%{version}
+%{app_prefix}/*
+%doc ChangeLog COPYING LICENSE RELEASE.NOTES doc/*
 
 
 %changelog
+* Wed Jan  2 2013 Jason Ish <ish@unx.ca> - 2.9.4-2
+- Install to a version specific prefix.
+
 * Tue Dec  4 2012 Jason Ish <ish@unx.ca> - 2.9.4-1
 - Update for Snort 2.9.4.
 

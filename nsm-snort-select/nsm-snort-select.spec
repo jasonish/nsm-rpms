@@ -1,7 +1,7 @@
 %define _prefix /opt/nsm
 
 Name:           nsm-snort-select
-Version:        0.2
+Version:        0.3
 Release:        1%{?dist}
 Summary:        A tool to select the default version of SNORT(R).
 Group:          NSM
@@ -50,6 +50,9 @@ fi
 
 
 %changelog
+* Wed Jan  2 2013 Jason Ish <ish@unx.ca> - 0.3-1
+- Handle version specific prefixes.
+
 * Thu Aug  9 2012 Jason Ish <ish@unx.ca> - 0.2-1
 - Make additonal links link to the active link.
 

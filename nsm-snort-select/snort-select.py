@@ -60,18 +60,39 @@ def get_versions():
         if m:
             versions.append(m.group(1))
 
+    # New style.
+    for directory in os.listdir("%s/packages/snort" % (NSM_PREFIX)):
+        versions.append(directory)
+
     return versions
+
+def is_active(version):
+    snort = "%s/bin/snort" % (NSM_PREFIX)
+    if os.path.exists(snort):
+        if version in os.readlink(snort).split("/"):
+            return True
+
+    # Maybe an older style package.
+    if os.path.basename(os.readlink(snort)) == "snort%s" % (version):
+        return True
+
+    return False
 
 def list_versions():
     versions = get_versions()
     if not versions:
         print("no versions of snort installed")
     else:
-        for v in versions:
-            print(v)
+        for version in versions:
+            if is_active(version):
+                print("%s (active)" % (version))
+            else:
+                print("%s" % (version))
         
 def set_link(version, if_not_set=False, additional_prefixes=[]):
+
     versions = get_versions()
+
     if version not in versions:
         err(1, "%s is not not installed" % (version))
 
@@ -79,6 +100,51 @@ def set_link(version, if_not_set=False, additional_prefixes=[]):
     if if_not_set and os.path.exists("%s/bin/snort" % (NSM_PREFIX)):
         sys.exit(0)
 
+    if os.path.exists("%s/packages/snort/%s" % (NSM_PREFIX, version)):
+        new_set_link(version, additional_prefixes)
+    else:
+        old_set_link(version, additional_prefixes)
+
+def new_set_link(version, additional_prefixes):
+    links = ("bin/snort",
+             "bin/u2boat",
+             "bin/u2spewfoo",
+             "lib/snort",
+             "lib/snort_dynamicengine",
+             "lib/snort_dynamicpreprocessor",
+             "share/man/man8/snort.8",
+             )
+
+    # Remove existing links.
+    for link in links:
+        path = "%s/%s" % (NSM_PREFIX, link)
+        if os.path.exists(path) or os.path.islink(path):
+            print("Unlinking %s." % (path))
+            os.unlink(path)
+
+    # Create new links.
+    for link in links:
+        src = "%s/packages/snort/%s/%s" % (NSM_PREFIX, version, link)
+        dst = "%s/%s" % (NSM_PREFIX, link)
+        print("Linking %s -> %s." % (dst, src))
+        if not os.path.exists(os.path.dirname(dst)):
+            os.makedirs(os.path.dirname(dst))
+        os.symlink(src, dst)
+
+    # Link additional prefixes.
+    for prefix in additional_prefixes:
+        for link in links:
+            src = "%s/%s" % (NSM_PREFIX, link)
+            dst = "%s/%s" % (prefix, link)
+            print("Linking %s -> %s." % (dst, src))
+            if os.path.islink(dst):
+                os.unlink(dst)
+            elif os.path.exists(dst):
+                print("WARNING: %s is not link.  Not removing.")
+                continue
+            os.symlink(src, dst)
+
+def old_set_link(version, additional_prefixes):
     # Remove existing symlinks.
     paths = ["%s/bin/snort" % (NSM_PREFIX),
              "%s/lib/snort_dynamicengine" % (NSM_PREFIX),
@@ -89,7 +155,7 @@ def set_link(version, if_not_set=False, additional_prefixes=[]):
 
     for dst in paths:
         src = dst.replace("snort", "snort%s" % (version))
-        if os.path.exists(dst):
+        if os.path.exists(dst) or os.path.islink(dst):
             os.unlink(dst)
         os.symlink(src, dst)
 

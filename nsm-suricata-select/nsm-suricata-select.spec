@@ -1,7 +1,7 @@
 %define _prefix /opt/nsm
 
 Name:           nsm-suricata-select
-Version:        0.2
+Version:        0.3
 Release:        1%{?dist}
 Summary:        A tool to select the default version of Suricata
 Group:          NSM
@@ -49,6 +49,9 @@ fi
 
 
 %changelog
+* Wed Jan  2 2013 Jason Ish <ish@unx.ca> - 0.3-1
+- Handle version specific prefixes.
+
 * Wed Aug 22 2012 Jason Ish <ish@unx.ca> - 0.2-1
 - List by default.
 

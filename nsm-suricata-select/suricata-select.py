@@ -59,15 +59,33 @@ def get_versions():
         if m:
             versions.append(m.group(1))
 
+    for directory in os.listdir("%s/packages/suricata" % (NSM_PREFIX)):
+        versions.append(directory)
+
     return versions
+
+def is_active(version):
+    suricata = "%s/bin/suricata" % (NSM_PREFIX)
+    if os.path.exists(suricata):
+        if version in os.readlink(suricata).split("/"):
+            return True
+
+    # Maybe an older style package.
+    if os.path.basename(os.readlink(suricata)) == "suricata%s" % (version):
+        return True
+
+    return False
 
 def list_versions():
     versions = get_versions()
     if not versions:
         print("no versions of suricata installed")
     else:
-        for v in versions:
-            print(v)
+        for version in versions:
+            if is_active(version):
+                print("%s (active)" % (version))
+            else:
+                print("%s" % (version))
         
 def set_link(version, if_not_set=False):
 
@@ -80,6 +98,32 @@ def set_link(version, if_not_set=False):
     if if_not_set and os.path.exists("%s/bin/suricata" % (NSM_PREFIX)):
         sys.exit(0)
 
+    if os.path.exists("%s/packages/suricata/%s" % (NSM_PREFIX, version)):
+        new_set_link(version)
+    else:
+        old_set_link(version)
+
+def new_set_link(version):
+    links = ("bin/suricata",
+             "bin/suricata-debug")
+
+    # Remove existing links.
+    for link in links:
+        path = "%s/%s" % (NSM_PREFIX, link)
+        if os.path.exists(path) or os.path.islink(path):
+            print("Unlinking %s." % (path))
+            os.unlink(path)
+
+    # Create new links.
+    for link in links:
+        src = "%s/packages/suricata/%s/%s" % (NSM_PREFIX, version, link)
+        dst = "%s/%s" % (NSM_PREFIX, link)
+        print("Linking %s -> %s." % (dst, src))
+        if not os.path.exists(os.path.dirname(dst)):
+            os.makedirs(os.path.dirname(dst))
+        os.symlink(src, dst)
+
+def old_set_link(version):
     links = (
         ("bin/suricata%s" % (version), "bin/suricata"),
         ("bin/suricata-debug%s" % (version), "bin/suricata-debug"),
