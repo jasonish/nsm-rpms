@@ -1,16 +1,18 @@
 SUBDIRS +=	nsm-release-el-6
 SUBDIRS +=	nsm-release-fc
 
+# Libraries.
 SUBDIRS +=	libnetfilter_queue
-
 SUBDIRS +=	jansson
+SUBDIRS +=	libdaq
 
+# Suricata.
 SUBDIRS +=	suricata1.3.5
 SUBDIRS +=	suricata1.4
 SUBDIRS +=	suricata-latest
 SUBDIRS +=	suricata-select
 
-SUBDIRS +=	libdaq
+# Snort.
 SUBDIRS +=	snort2.9.2.3
 SUBDIRS +=	snort2.9.3
 SUBDIRS +=	snort2.9.3.1
@@ -18,9 +20,11 @@ SUBDIRS +=	snort2.9.4
 SUBDIRS +=	snort-latest
 SUBDIRS +=	snort-select
 
+# Other tools.
 SUBDIRS +=	barnyard2
 SUBDIRS +=	daemonlogger
 SUBDIRS +=	netsniff-ng
+SUBDIRS +=	pulledpork
 
 all:
 

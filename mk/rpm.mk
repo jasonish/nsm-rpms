@@ -14,10 +14,8 @@ SRPM_FILENAME :=$(RPM_NAME)-$(RPM_VERSION)-$(RPM_RELEASE).src.rpm
 # The list of sources used by the RPM.
 SOURCES :=	$(notdir $(shell spectool -l $(SPEC) | awk '{ print $$2 }'))
 
--include $(MK)/../local.mk
-include $(MK)/fetch.mk
-include $(MK)/checksum.mk
-include $(MK)/mock.mk
+RPM_MACROS :=	--define 'nsm_prefix /opt/nsm'
+RPM_MACROS +=	--define '_defaultdocdir /opt/nsm/share/doc'
 
 all:
 	@echo ""
@@ -29,15 +27,22 @@ all:
 	@echo "  $(MAKE) sign     Sign built RPMs."
 	@echo ""
 
+-include $(MK)/../local.mk
+include $(MK)/fetch.mk
+include $(MK)/checksum.mk
+include $(MK)/mock.mk
+
 local:
 	@$(MAKE) fetch
 	@$(MAKE) checksum
+	echo $(RPM_MACROS)
 	rpmbuild \
 		--define '_sourcedir $(CURDIR)/work/SOURCES' \
 		--define '_specdir $(CURDIR)' \
 		--define '_builddir $(CURDIR)/work/BUILD' \
 		--define '_srcrpmdir $(CURDIR)/work/SRPMS' \
 		--define '_rpmdir $(CURDIR)/work/RPMS' \
+		$(RPM_MACROS) \
 		--nodeps -ba $(SPEC)
 
 work/SRPMS/$(SRPM_FILENAME): $(SPEC) $(addprefix work/SOURCES/,$(SOURCES))

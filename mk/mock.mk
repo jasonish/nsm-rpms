@@ -49,7 +49,9 @@ ifdef MOCK_INSTALL
 endif
 
 	$(MOCK) -v --no-cleanup-after --no-clean \
-		--resultdir=$(MOCK_RESULT) work/SRPMS/$(SRPM_FILENAME)
+		--resultdir=$(MOCK_RESULT) \
+		$(RPM_MACROS) \
+		work/SRPMS/$(SRPM_FILENAME)
 	$(MOCK) clean
 	mkdir -p $(RPM_CACHE)
 
