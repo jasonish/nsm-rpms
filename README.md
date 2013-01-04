@@ -1,9 +1,8 @@
 NSM RPMs
 ========
 
-The NSM RPMs is a collection RPM packages related to Network Security
-Monitoring.
+The NSM RPMs is a collection RPM packages (including Snort and
+Suricata RPMS) related to Network Security Monitoring.
 
-Refer to the
-[wiki](https://github.com/jasonish/nsm-rpms/wiki) for more
-information.
+Refer to the [homepage](http://nsm-rpms.unx.ca/) for information on
+getting started.
