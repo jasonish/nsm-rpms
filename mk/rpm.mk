@@ -1,9 +1,7 @@
-all:
+MK :=		$(dir $(lastword $(MAKEFILE_LIST)))
 
--include ../local.mk
-
-DISTFILE_DIR :=	../.cache/distfiles
-RPM_CACHE :=	../.cache/rpms
+DISTFILE_DIR :=	$(MK)/../cache/distfiles
+RPM_CACHE :=	$(MK)/../cache/rpms
 
 RPM_NAME :=	$(shell awk '/^Name:/ { print $$2 }' $(SPEC))
 RPM_VERSION =	$(shell awk '/^Version:/ { print $$2 }' $(SPEC))
@@ -16,9 +14,10 @@ SRPM_FILENAME :=$(RPM_NAME)-$(RPM_VERSION)-$(RPM_RELEASE).src.rpm
 # The list of sources used by the RPM.
 SOURCES :=	$(notdir $(shell spectool -l $(SPEC) | awk '{ print $$2 }'))
 
-include ../mk/fetch.mk
-include ../mk/checksum.mk
-include ../mk/mock.mk
+-include $(MK)/../local.mk
+include $(MK)/fetch.mk
+include $(MK)/checksum.mk
+include $(MK)/mock.mk
 
 all:
 	@echo ""
