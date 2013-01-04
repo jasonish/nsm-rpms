@@ -20,6 +20,7 @@ SUBDIRS +=	nsm-snort-select
 
 SUBDIRS +=	nsm-barnyard2
 SUBDIRS +=	nsm-daemonlogger
+SUBDIRS +=	nsm-netsniff-ng
 
 all:
 
