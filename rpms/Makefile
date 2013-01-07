@@ -25,6 +25,7 @@ SUBDIRS +=	barnyard2
 SUBDIRS +=	daemonlogger
 SUBDIRS +=	netsniff-ng
 SUBDIRS +=	pulledpork
+SUBDIRS +=	bro
 
 all:
 
