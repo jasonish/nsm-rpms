@@ -1,15 +1,16 @@
-MK :=		$(dir $(lastword $(MAKEFILE_LIST)))
+TOPDIR :=	$(realpath $(dir $(word 2,$(MAKEFILE_LIST)))..)
+MK :=		$(TOPDIR)/mk
 
-DISTFILE_DIR :=	$(MK)/../cache/distfiles
-RPM_CACHE :=	$(MK)/../cache/rpms
+DISTFILE_DIR :=	$(TOPDIR)/cache/distfiles
+RPM_CACHE :=	$(TOPDIR)/cache/rpms
 
 RPM_NAME :=	$(shell awk '/^Name:/ { print $$2 }' $(SPEC))
 RPM_VERSION =	$(shell awk '/^Version:/ { print $$2 }' $(SPEC))
 RPM_RELEASE :=	$(shell awk \
-		  '/^Release/ { gsub(/%{\?dist}/,".nsm"); print $$2 }' $(SPEC))
+		  '/^Release/ { gsub(/%{\?dist}/,""); print $$2 }' $(SPEC))
 
 # The source RPM (SRPM) filename
-SRPM_FILENAME :=$(RPM_NAME)-$(RPM_VERSION)-$(RPM_RELEASE).src.rpm
+SRPM_FILENAME :=$(RPM_NAME)-$(RPM_VERSION)-$(RPM_RELEASE).nsm.src.rpm
 
 # The list of sources used by the RPM.
 SOURCES :=	$(notdir $(shell spectool -l $(SPEC) | awk '{ print $$2 }'))
@@ -27,7 +28,7 @@ all:
 	@echo "  $(MAKE) sign     Sign built RPMs."
 	@echo ""
 
--include $(MK)/../local.mk
+-include $(TOPDIR)/local.mk
 include $(MK)/fetch.mk
 include $(MK)/checksum.mk
 include $(MK)/mock.mk

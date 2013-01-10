@@ -1,8 +1,7 @@
 SPEC :=		suricata.spec
 
-DEPENDS +=	jansson
-
 MOCK_INSTALL += nsm-jansson-2.4-1
+MOCK_INSTALL += nsm-luajit-2.0.0-1
 
 ifeq ($(findstring epel-6,$(MOCK_CONFIG)),epel-6)
 MOCK_INSTALL +=	libnetfilter_queue-1.0.0-2 \
