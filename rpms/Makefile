@@ -5,6 +5,7 @@ SUBDIRS +=	nsm-release-fc
 SUBDIRS +=	libnetfilter_queue
 SUBDIRS +=	jansson
 SUBDIRS +=	libdaq
+SUBDIRS +=	luajit
 
 # Suricata.
 SUBDIRS +=	suricata1.3.5

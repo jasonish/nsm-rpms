@@ -1,26 +1,30 @@
-%define _defaultdocdir %{nsm_prefix}/share/doc
-
 %define realname suricata
-%define nsm_prefix /opt/nsm
 
 Summary: The Suricata Open Source Intrusion Detection and Prevention Engine
 Name: nsm-suricata1.4
 Version: 1.4
-Release: 4%{?dist}
+Release: 5%{?dist}
 License: GPL
 Group: NSM
 URL: http://www.openinfosecfoundation.org/
 Source0: http://www.openinfosecfoundation.org/download/%{realname}-%{version}%{?version_suffix}.tar.gz
 BuildRoot: %{_tmppath}/%{realname}-%{version}%{?version_suffix}-%{release}-root
 
+%define nsm_jansson_version 2.4-1%{?dist}
+%define nsm_luajit_version 2.0.0-1%{?dist}
+
 BuildRequires: pcre-devel, libyaml-devel, libpcap-devel, file-devel, zlib-devel
 BuildRequires: libnetfilter_queue-devel
 BuildRequires: nss-devel
 BuildRequires: nspr-devel
+BuildRequires: nsm-jansson = %{nsm_jansson_version}
+BuildRequires: nsm-luajit = %{nsm_luajit_version}
 
 Requires: pcre, libyaml, libpcap, file, zlib, libnetfilter_queue
-Requires: nsm-suricata-select >= 0.3
 Requires: nspr, nss
+Requires: nsm-suricata-select >= 0.3
+Requires: nsm-jansson = %{nsm_jansson_version}
+Requires: nsm-luajit = %{nsm_luajit_version}
 
 %define app_prefix  %{nsm_prefix}/packages/%{realname}/%{version}
 %define app_datadir %{app_prefix}/share
@@ -32,8 +36,12 @@ Detection and Prevention Engine
 Options:
   - AF_PACKET
   - NFQueue
+  - Unix socket
   - libnss
   - libnspr
+  - libjansson
+  - libluajit
+
 
 %prep
 %setup -q -n %{realname}-%{version}%{?version_suffix}
@@ -41,16 +49,7 @@ Options:
 
 %build
 
-build_libhtp() {
-    pushd libhtp
-    ./configure --prefix=%{nsm_prefix} \
-	--enable-shared=no --enable-static=yes
-    make
-    popd
-}
-
 build_suricata() {
-    build_libhtp
     ./configure \
 	--prefix=%{app_prefix} \
 	--enable-af-packet \
@@ -61,6 +60,9 @@ build_suricata() {
 	--with-libnspr-includes=%{_includedir}/nspr4 \
 	--with-libjansson-includes=%{nsm_prefix}/include \
 	--with-libjansson-libraries=%{nsm_prefix}/lib \
+	--enable-luajit \
+	--with-libluajit-includes=%{nsm_prefix}/include/luajit-2.0 \
+	--with-libluajit-libraries=%{nsm_prefix}/lib \
 	$@
     make
 }
@@ -94,11 +96,6 @@ done
 # care of these files for us.
 rm -rf $RPM_BUILD_ROOT%{app_prefix}/share/doc/suricata
 
-# Remove stuff we don't want to include in the RPM.
-rm -rf $RPM_BUILD_ROOT/%{app_prefix}/include
-rm -rf $RPM_BUILD_ROOT/%{app_prefix}/lib
-rm -rf $RPM_BUILD_ROOT/%{app_prefix}/share/doc
-
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -117,11 +114,19 @@ fi
 
 %files
 %defattr(-,root,root,-)
-%{app_prefix}/*
+%{app_prefix}/bin/suricata
+%{app_prefix}/bin/suricata-debug
+%{app_prefix}/bin/suricatasc
+%{app_prefix}/include/*
+%{app_prefix}/lib/*
+%{app_prefix}/share/*
 %doc COPYING LICENSE ChangeLog
 
 
 %changelog
+* Thu Jan 10 2013 Jason Ish <ish@unx.ca> - 1.4-5
+- Add luajit support.
+
 * Wed Jan  2 2013 Jason Ish <ish@unx.ca> - 1.4-4
 - Install to a version specific prefix.
 

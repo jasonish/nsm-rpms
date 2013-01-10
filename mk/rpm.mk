@@ -43,7 +43,7 @@ local:
 		--define '_srcrpmdir $(CURDIR)/work/SRPMS' \
 		--define '_rpmdir $(CURDIR)/work/RPMS' \
 		$(RPM_MACROS) \
-		--nodeps -ba $(SPEC)
+		-ba $(SPEC)
 
 work/SRPMS/$(SRPM_FILENAME): $(SPEC) $(addprefix work/SOURCES/,$(SOURCES))
 	@$(MAKE) checksum

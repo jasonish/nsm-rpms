@@ -1,5 +1,7 @@
 SPEC :=		suricata.spec
 
+DEPENDS +=	jansson
+
 MOCK_INSTALL += nsm-jansson-2.4-1
 
 ifeq ($(findstring epel-6,$(MOCK_CONFIG)),epel-6)
