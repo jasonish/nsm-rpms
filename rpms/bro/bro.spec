@@ -3,7 +3,7 @@
 Summary:	Bro is a powerful network analysis framework
 Name:		nsm-bro
 Version:	2.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	BSD	
 URL:		http://www.bro-ids.org/
 Source0:	http://www.bro-ids.org/downloads/release/%{realname}-%{version}.tar.gz
@@ -28,7 +28,7 @@ from the typical IDS you may know.
 
 
 %build
-./configure --prefix=%{nsm_prefix}
+./configure --prefix=%{nsm_prefix} --conf-files-dir=%{nsm_prefix}/etc/bro
 make
 
 
@@ -43,8 +43,13 @@ make install DESTDIR=$RPM_BUILD_ROOT
 %{nsm_prefix}/include/*
 %{nsm_prefix}/lib/*
 %{nsm_prefix}/share/*
-%config %{nsm_prefix}/etc/*
+%config %{nsm_prefix}/etc/bro/*
 %doc CHANGES COPYING INSTALL NEWS README VERSION
 
 
 %changelog
+* Wed Jan  9 2013 Jason Ish <ish@unx.ca> - 2.1-2
+- Move the configuration files into etc/bro.
+
+* Fri Jan  4 2013 Jason Ish <ish@unx.ca> - 2.1-1
+- Initial Bro RPM.
