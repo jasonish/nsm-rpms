@@ -50,7 +50,7 @@ Options:
 %build
 
 build_suricata() {
-    ./configure \
+    LDFLAGS="-Wl,-rpath -Wl,%{nsm_prefix}/lib" ./configure \
 	--prefix=%{app_prefix} \
 	--enable-af-packet \
 	--enable-nfqueue \
