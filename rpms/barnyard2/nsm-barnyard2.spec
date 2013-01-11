@@ -1,12 +1,9 @@
 %define realname barnyard2
 
-%define _prefix /opt/nsm
-%define _sysconfdir %{_prefix}/etc
-
 Summary: Barnyard2: A reader for SNORT(R) unified2 log files
 Name: nsm-barnyard2
 Version: 1.11
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: GPL
 Group: NSM
 URL: http://www.securixlive.com/barnyard2/index.php
@@ -19,7 +16,8 @@ BuildRequires: libpcap-devel, mysql-devel, postgresql-devel
 Requires: libpcap, mysql-libs
 Requires: postgresql-libs
 
-%define nsm_datadir %{_datadir}/%{realname}-%{version}
+%define app_datadir %{nsm_prefix}/share/%{realname}
+
 
 %description
 Barnyard2 is a dedicated spooler for Snort's unified2 binary output format.
@@ -32,7 +30,7 @@ Barnyard2 is a dedicated spooler for Snort's unified2 binary output format.
 
 %build
 ./autogen.sh
-%configure \
+./configure --prefix=%{nsm_prefix} \
 	--with-mysql \
 %ifarch x86_64
 	--with-mysql-libraries=/usr/lib64/mysql \
@@ -46,11 +44,16 @@ make
 %install
 rm -rf $RPM_BUILD_ROOT
 
-%{__mkdir_p} $RPM_BUILD_ROOT%{_bindir}
-%{__install} -m 755 src/barnyard2 $RPM_BUILD_ROOT%{_bindir}/
+%{__mkdir_p} $RPM_BUILD_ROOT%{nsm_prefix}/bin
+%{__install} -m 755 src/barnyard2 $RPM_BUILD_ROOT%{nsm_prefix}/bin
 
-%{__mkdir_p} $RPM_BUILD_ROOT%{nsm_datadir}
-%{__install} -m 644 etc/barnyard2.conf $RPM_BUILD_ROOT%{nsm_datadir}
+%{__mkdir_p} $RPM_BUILD_ROOT%{app_datadir}
+%{__install} -m 644 etc/barnyard2.conf $RPM_BUILD_ROOT%{app_datadir}
+
+%{__mkdir_p} $RPM_BUILD_ROOT%{app_datadir}/schemas
+%{__install} -m 644 schemas/create_{mysql,postgresql} \
+	     $RPM_BUILD_ROOT%{app_datadir}/schemas
+%{__install} -m 644 schemas/SCHEMA_ACCESS $RPM_BUILD_ROOT%{app_datadir}/schemas
 
 
 %clean
@@ -59,13 +62,17 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root,-)
-%{_bindir}/*
-%{nsm_datadir}/*
+%{nsm_prefix}/bin/barnyard2
+%{app_datadir}/barnyard2.conf
+%{app_datadir}/schemas/*
 %doc LICENSE RELEASE.NOTES README COPYING
 %doc doc/INSTALL doc/README.*
 
 
 %changelog
+* Fri Jan 11 2013 Jason Ish <ish@unx.ca> - 1.11-2
+- Add schema files.
+
 * Fri Oct 19 2012 Jason Ish <ish@unx.ca> - 1.10-1
 - Update to v1.10 release.
 
