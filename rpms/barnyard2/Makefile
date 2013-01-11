@@ -1,4 +1,4 @@
-SPEC =		nsm-barnyard2.spec
+SPEC =		barnyard2.spec
 
 SOURCE_FILE =	barnyard2-1.11.tar.gz
 #SOURCE_URL =	https://github.com/firnsy/barnyard2/tarball/v2-1.11
