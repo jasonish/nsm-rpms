@@ -2,3 +2,4 @@ cache
 local.mk
 work/
 reporoot/
+*~

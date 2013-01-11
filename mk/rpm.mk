@@ -1,4 +1,5 @@
 TOPDIR :=	$(realpath $(dir $(word 2,$(MAKEFILE_LIST)))..)
+export TOPDIR
 MK :=		$(TOPDIR)/mk
 
 DISTFILE_DIR :=	$(TOPDIR)/cache/distfiles

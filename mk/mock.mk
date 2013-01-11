@@ -15,21 +15,24 @@ endif
 
 mock mock-deploy:
 	@for dist in $(MOCK_DISTS); do \
+		echo "Calling $(MAKE) $@ for MOCK_CONFIG=$$dist"; \
 		$(MAKE) $@ MOCK_CONFIG=$$dist || exit 1; \
 	done
 
 else # MOCK_CONFIG
 
-MOCK_DIST :=	$(shell python -c 'config_opts = {}; \
-			exec(open("/etc/mock/$(MOCK_CONFIG).cfg").read()); \
-			print config_opts["dist"]')
-MOCK_ARCH :=	$(shell python -c 'config_opts = {}; \
-			exec(open("/etc/mock/$(MOCK_CONFIG).cfg").read()); \
-			print config_opts["target_arch"]')
+MOCK_DIST :=	$(shell $(MK)/get-mock-dist $(MOCK_CONFIG))
+MOCK_ARCH :=	$(shell $(MK)/get-mock-arch $(MOCK_CONFIG))
 MOCK_RESULT =	work/mock/$(MOCK_CONFIG)
 
 MOCK_INSTALL :=	$(addprefix $(RPM_CACHE)/,\
 	$(addsuffix .$(MOCK_DIST).$(MOCK_ARCH).rpm,$(MOCK_INSTALL)))
+
+ifdef DEPENDS
+DEPENDS :=	$(shell env MOCK_DIST=$(MOCK_DIST) MOCK_ARCH=$(MOCK_ARCH) \
+			$(TOPDIR)/mk/resolve-deps $(DEPENDS))
+DEPENDS :=	$(addprefix $(RPM_CACHE)/,$(DEPENDS))
+endif
 
 # Use mock to build the package.
 mock: work/SRPMS/$(SRPM_FILENAME)
@@ -37,6 +40,16 @@ mock: work/SRPMS/$(SRPM_FILENAME)
 	rm -rf $(MOCK_RESULT)
 
 	$(MOCK) --init
+
+ifdef DEPENDS
+	@for dep in $(DEPENDS); do \
+	    if [ ! -e $$dep ]; then \
+		echo "***> ERROR: Dependency package $$dep does not exist."; \
+		exit 1; \
+	    fi \
+	done
+	$(MOCK) $(foreach path, $(DEPENDS), --install $(path))
+endif
 
 ifdef MOCK_INSTALL
 	@for filename in $(MOCK_INSTALL); do \

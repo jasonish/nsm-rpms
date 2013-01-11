@@ -1,0 +1,84 @@
+#! /usr/bin/env python
+
+# A script to return complete package names when given a list of
+# packages that just contain the descriptive name with no version
+# info.
+#
+# For example, given "nsm-jansson" it will return something like
+# nsm-jansson-2.4-1.el6.i686.rpm.
+
+from __future__ import print_function
+
+import sys
+import os
+import os.path
+import commands
+import re
+
+# Resolve the topdir.
+topdir = os.path.abspath(os.path.dirname(os.path.dirname(sys.argv[0])))
+
+def parse_package_name(package):
+    """ Return a tuple containing the parts of a package name.
+
+    name, version, release, dist, arch
+    """
+    m = re.match("(.*)-(.*)-(.*)\.(.*)\.(.*)$", package)
+    if not m:
+        print("ERROR: Failed to parse %s." % (package))
+        sys.exit(1)
+    return m.groups()
+
+def get_spec_files():
+    """ Get a list of paths to all available spec files. """
+    spec_files = []
+    rpmdir = "%s/rpms" % (topdir)
+    for root, dirnames, filenames in os.walk(rpmdir):
+        for filename in filenames:
+            if filename.endswith(".spec"):
+                spec_file = "%s/%s" % (root, filename)
+                spec_files.append(spec_file)
+    return spec_files
+
+def get_package_names(spec):
+    """ Given a spec file, return the list of package names it
+    produces. """
+    status, output = commands.getstatusoutput(
+        "rpm -q --specfile %s" % (spec))
+    assert(status == 0)
+    return output.strip().split("\n")
+
+def fix_dist_arch(package):
+    """ Update the dist and arch tags in the package name if MOCK_DIST
+    or MOCK_ARCH are set. """
+    name, dist, arch = package.rsplit(".", 2)
+    if os.getenv("MOCK_DIST"):
+        dist = os.getenv("MOCK_DIST")
+    if os.getenv("MOCK_ARCH"):
+        arch = os.getenv("MOCK_ARCH")
+    return "%s.%s.%s" % (name, dist, arch)
+
+def get_all_package_names():
+    """ Return a list of all package names provided by all spec files. """
+    packages = []
+    for spec in get_spec_files():
+        packages += get_package_names(spec)
+    return [fix_dist_arch(package) for package in packages]
+
+packages = get_all_package_names()
+
+def find_package(name):
+    for package in packages:
+        if parse_package_name(package)[0] == name:
+            return package
+    return None
+
+for dep in sys.argv[1:]:
+    package = find_package(dep)
+    if not package:
+        print("ERROR: Failed to resolve package for name %s." % (
+                dep), file=sys.stderr)
+        sys.exit(1)
+    else:
+        print("%s.rpm" % (package))
+sys.exit(1)
