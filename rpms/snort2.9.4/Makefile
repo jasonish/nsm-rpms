@@ -1,6 +1,6 @@
 SPEC =		snort.spec
 
-DEPENDS +=	nsm-libdaq
+DEPENDS +=	nsm-daq
 
 ifeq ($(findstring epel-6,$(MOCK_CONFIG)),epel-6)
 DEPENDS +=	libnetfilter_queue \

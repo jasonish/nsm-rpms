@@ -1,15 +1,15 @@
 %define realname daq
-%define _prefix /opt/nsm
 
 Summary: Sourcefire Data Acquisition Library
-Name: nsm-libdaq
+Name: nsm-daq
 Version: 2.0.0
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: GPL
 Group: NSM
 URL: http://www.snort.org/
 Source0: %{realname}-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
+Obsoletes: nsm-libdaq
 
 BuildRequires: libpcap-devel, libdnet-devel, libnetfilter_queue-devel
 BuildRequires: flex, bison
@@ -25,20 +25,13 @@ Sourcefire data acquisition library.
 
 
 %build
-%configure
+./configure --prefix=%{nsm_prefix} --enable-static --disable-shared
 make
 
 
 %install
 rm -rf $RPM_BUILD_ROOT
 make install DESTDIR=$RPM_BUILD_ROOT
-
-# We only want to depend on DAQ for building, not for runing.  So kill off
-# the shared libraries.
-rm -rf $RPM_BUILD_ROOT%{_libdir}/daq
-rm -f $RPM_BUILD_ROOT%{_libdir}/*.so
-rm -f $RPM_BUILD_ROOT%{_libdir}/*.so.*
-rm -f $RPM_BUILD_ROOT%{_libdir}/*.la
 
 
 %clean
@@ -47,14 +40,14 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root,-)
-%{_bindir}/*
-%{_includedir}/*
-%{_libdir}/*.a
+%{nsm_prefix}/bin/daq-modules-config
+%{nsm_prefix}/include/*
+%{nsm_prefix}/lib/*
 %doc README COPYING ChangeLog 
 
 
 %changelog
-* Tue Dec  4 2012 Jason Ish <ish@unx.ca> - 1.1.1-1
+* Tue Dec  4 2012 Jason Ish <ish@unx.ca> - 2.0.0-1
 - Update to 2.0.0.
 
 * Mon Jul 30 2012 Jason Ish <ish@unx.ca> - 1.1.1-1

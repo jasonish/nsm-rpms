@@ -1,0 +1,20 @@
+[nsm]
+name=NSM Packages for Fedora Linux $releasever - $basearch
+baseurl=http://nsm-rpms.unx.ca/nsm-rpms/fedora/$releasever/$basearch
+enabled=1
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-nsm
+
+[nsm-debuginfo]
+name=NSM Packages for Fedora Linux $releasever - $basearch - Debug
+baseurl=http://nsm-rpms.unx.ca/nsm-rpms/fedora/$releasever/$basearch/debug
+enabled=0
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-nsm
+gpgcheck=1
+
+[nsm-source]
+name=NSM Packages for Fedora Linux $releasever - Source
+baseurl=http://nsm-rpms.unx.ca/nsm-rpms/fedora/$releasever/SRPMS
+enabled=0
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-nsm
+gpgcheck=1

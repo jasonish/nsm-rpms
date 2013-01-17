@@ -1,0 +1,79 @@
+#! /usr/bin/env python
+
+# Given a list of RPM filenames, copy the RPMS to a directory
+# structure representing a Yum repository.
+
+from __future__ import print_function
+
+import sys
+import os
+import os.path
+import re
+import optparse
+import shutil
+
+class RPM(object):
+
+    def __init__(self, filename):
+        self.filename = filename
+        self.basename = os.path.basename(self.filename)
+        self.parse_filename()
+
+    def parse_filename(self):
+        m = re.match(
+            "(.*)-([^-]+)-([^-]+)\.([^\.]+)\.([^\.]+)\.rpm", self.filename)
+        self.name, self.version, self.release, self.dist, self.arch = m.groups()
+
+    def __repr__(self):
+        return "%s-%s-%s.%s.%s" % (
+            self.name, self.version, self.release, self.dist, self.arch)
+
+def get_repo_path(rpm, root=None):
+    if root:
+        path = [root]
+    else:
+        path = []
+
+    if rpm.dist == "el6":
+        path += ["el", "6"]
+    elif rpm.dist == "fc17":
+        path += ["fedora", "17"]
+    elif rpm.dist == "fc18":
+        path += ["fedora", "18"]
+    else:
+        raise Exception("Unknown package dist: %s" % (rpm.dist))
+
+    if rpm.arch in ["i386", "i686"]:
+        path.append("i386")
+    elif rpm.arch == "x86_64":
+        path.append(rpm.arch)
+    elif rpm.arch == "src":
+        path.append("SRPMS")
+    else:
+        raise Exception("Unknown arch: %s" % rpm.arch)
+
+    if rpm.name.endswith("-debuginfo"):
+        path.append("debug")
+
+    return "/".join(path)
+
+def main():
+
+    parser = optparse.OptionParser()
+    parser.add_option("--root", dest="root", help="repo root")
+    opts, args = parser.parse_args()
+
+    if not opts.root:
+        print("ERROR: --root must be specified.", file=sys.stderr)
+        return 1
+
+    for filename in args:
+        rpm = RPM(filename)
+        repo_path = get_repo_path(rpm, root=opts.root)
+        print("Copying %s to %s" % (filename, repo_path))
+        if not os.path.exists(repo_path):
+            os.makedirs(repo_path)
+        shutil.copy(filename, repo_path)
+
+if __name__ == "__main__":
+    sys.exit(main())

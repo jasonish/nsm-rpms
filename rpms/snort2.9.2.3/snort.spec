@@ -14,7 +14,7 @@ BuildRoot: %{_tmppath}/%{realname}-%{version}-%{release}-root
 BuildRequires: libpcap-devel, pcre-devel, libdnet-devel, zlib-devel
 BuildRequires: flex, bison
 BuildRequires: libnetfilter_queue-devel
-BuildRequires: nsm-libdaq >= 0.6.2-1
+BuildRequires: nsm-daq
 
 Requires: libpcap, pcre, libdnet, libnetfilter_queue, zlib
 Requires: nsm-snort-select >= 0.01

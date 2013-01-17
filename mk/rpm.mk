@@ -11,7 +11,7 @@ RPM_RELEASE :=	$(shell awk \
 		  '/^Release/ { gsub(/%{\?dist}/,""); print $$2 }' $(SPEC))
 
 # The source RPM (SRPM) filename
-SRPM_FILENAME :=$(RPM_NAME)-$(RPM_VERSION)-$(RPM_RELEASE).nsm.src.rpm
+SRPM :=$(RPM_NAME)-$(RPM_VERSION)-$(RPM_RELEASE).nsm.src.rpm
 
 # The list of sources used by the RPM.
 SOURCES :=	$(notdir $(shell spectool -l $(SPEC) | awk '{ print $$2 }'))
@@ -47,7 +47,7 @@ local:
 		$(RPM_MACROS) \
 		-ba $(SPEC)
 
-work/SRPMS/$(SRPM_FILENAME): $(SPEC) $(addprefix work/SOURCES/,$(SOURCES))
+work/SRPMS/$(SRPM): $(SPEC) $(addprefix work/SOURCES/,$(SOURCES))
 	@$(MAKE) checksum
 	rpmbuild \
 		--define '_sourcedir $(CURDIR)/work/SOURCES' \
@@ -59,7 +59,7 @@ work/SRPMS/$(SRPM_FILENAME): $(SPEC) $(addprefix work/SOURCES/,$(SOURCES))
 		--nodeps -bs $(SPEC)
 	@echo $^
 
-srpm: work/SRPMS/$(SRPM_FILENAME)
+srpm: work/SRPMS/$(SRPM)
 
 sign:
 ifndef GPG_NAME

@@ -1,10 +1,11 @@
 SUBDIRS +=	nsm-release-el-6
-SUBDIRS +=	nsm-release-fc
+SUBDIRS +=	nsm-release-fc-17
+SUBDIRS +=	nsm-release-fc-18
 
 # Libraries.
 SUBDIRS +=	libnetfilter_queue
 SUBDIRS +=	jansson
-SUBDIRS +=	libdaq
+SUBDIRS +=	daq
 SUBDIRS +=	luajit
 
 # Suricata.
