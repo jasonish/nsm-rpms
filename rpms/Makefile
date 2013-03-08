@@ -11,6 +11,7 @@ SUBDIRS +=	luajit
 # Suricata.
 SUBDIRS +=	suricata1.3.5
 SUBDIRS +=	suricata1.4
+SUBDIRS +=	suricata1.4.1
 SUBDIRS +=	suricata-latest
 SUBDIRS +=	suricata-select
 
@@ -19,6 +20,7 @@ SUBDIRS +=	snort2.9.2.3
 SUBDIRS +=	snort2.9.3
 SUBDIRS +=	snort2.9.3.1
 SUBDIRS +=	snort2.9.4
+SUBDIRS +=	snort2.9.4.1
 SUBDIRS +=	snort-latest
 SUBDIRS +=	snort-select
 
@@ -31,7 +33,7 @@ SUBDIRS +=	bro
 
 all:
 
--include local.mk
+-include ../local.mk
 
 fetch makesum mock mock-dists clean srpm deploy deploy-dists::
 	@for dir in $(SUBDIRS); do \
