@@ -1,6 +1,6 @@
 Name:           nsm-snort-latest
-Version:        2.9.4
-Release:        2%{?dist}
+Version:        2.9.4.1
+Release:        1%{?dist}
 Summary:        A pseudo package that always depends on the latest SNORT(R).
 Group:          NSM
 License:        GPLv2
@@ -34,6 +34,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Feb  6 2013 Jason Ish <ish@unx.ca> - 2.9.4.1-1
+- Update to Snort 2.9.4.1.
+
 * Thu Jan  3 2013 Jason Ish <ish@unx.ca> - 2.9.4-2
 - Don't depend on a specific release of package, yum will take care of
   getting us the latest release.
