@@ -1,6 +1,6 @@
 Name:           nsm-suricata-latest
-Version:        1.4
-Release:        2%{?dist}
+Version:        1.4.1
+Release:        1%{?dist}
 Summary:        A pseudo package that always depends on the latest Suricata
 Group:          NSM
 License:        GPL
@@ -36,6 +36,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Mar  8 2013 Jason Ish <ish@unx.ca> - 1.4.1-1
+- Update to 1.4.1-1.
+
 * Fri Dec 14 2012 Jason Ish <ish@unx.ca> - 1.4-2
 - Update to 1.4-2.
 
