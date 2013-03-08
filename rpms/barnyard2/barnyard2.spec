@@ -2,12 +2,12 @@
 
 Summary: Barnyard2: A reader for SNORT(R) unified2 log files
 Name: nsm-barnyard2
-Version: 1.11
-Release: 2%{?dist}
+Version: 1.12
+Release: 1%{?dist}
 License: GPL
 Group: NSM
 URL: http://www.securixlive.com/barnyard2/index.php
-Source0: barnyard2-1.11.tar.gz
+Source0: barnyard2-1.12.tar.gz
 BuildRoot: %{_tmppath}/%{realname}-%{version}-%{release}-root
 
 BuildRequires: libtool
@@ -24,8 +24,8 @@ Barnyard2 is a dedicated spooler for Snort's unified2 binary output format.
 
 
 %prep
-#%setup -q -n firnsy-barnyard2-4dfdc80
-%setup -q -n barnyard2-ish-v2-1.11
+%setup -q -n firnsy-barnyard2-3c1f553
+#%setup -q -n barnyard2-ish-v2-1.11
 
 
 %build
@@ -70,6 +70,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Mar  8 2013 Jason Ish <ish@unx.ca> - 1.12-1
+- Update to 2-1.12.
+
 * Fri Jan 11 2013 Jason Ish <ish@unx.ca> - 1.11-2
 - Add schema files.
 
